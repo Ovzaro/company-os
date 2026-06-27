@@ -1,0 +1,67 @@
+# macOS
+.DS_Store
+
+# Secrets and credentials
+.env
+.env.*
+credentials/
+secrets/
+auth-state.json
+auth-profiles.json
+device-auth.json
+device.json
+paired.json
+pending.json
+exec-approvals.json
+
+# Runtime state
+.openclaw/
+workspace-state.json
+sessions/
+*.trajectory-path.json
+delivery-queue/
+telegram/
+browser/
+user-data/
+locks/
+cron/runs/
+
+# Logs and temporary files
+logs/
+*.log
+*.pid
+tmp/
+temp/
+.cache/
+node-compile-cache/
+playwright-artifacts-*/
+
+# Backups and archives
+*.bak
+*.bak.*
+*.backup
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+
+# Generated dependencies/build output
+node_modules/
+dist/
+.openclaw-npm-cache/
+plugin-runtime-deps/
+
+# Live business data not ready for git
+*.xlsx
+*.xls
+*.csv
+
+# Large/generated media by default
+*.png
+*.jpg
+*.jpeg
+*.pdf
+
+# Explicitly allow intentional OpenClaw architecture docs
+!06-technology/openclaw/architecture/*.png
+!06-technology/openclaw/architecture/*.pdf
