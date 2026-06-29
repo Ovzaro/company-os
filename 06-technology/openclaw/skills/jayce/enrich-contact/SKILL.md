@@ -1,178 +1,326 @@
 ---
 name: enrich-contact
-description: Identify the true decision maker/economic buyer and best verified contact path — website + title-rotation search → LinkedIn URL → RocketReach, registry/ZoomInfo as fallback, then write confidence-scored contacts to the run sheet.
+description: Identify the highest-authority reachable decision maker, keep investigation evidence internal, verify work email/phone through RocketReach, and deliver only execution-ready contacts for Viktor.
 ---
 
-# Enrich a Lead's Contacts
+# Enrich Contact Intelligence
 
-Run this every time you enrich a qualified, de-dupe-cleared company. Work the ladder in order before
-accepting a company/general contact as primary. Work in the logged-in
-`openclaw` Chrome (RocketReach + brand sites + LinkedIn share one session).
+Run this every time you enrich a qualified, de-dupe-cleared company.
 
-**You only FIND.** Ekko already sourced and qualified the company; Viktor will de-dupe against the CRM
-and write HubSpot. You don't qualify companies, run HubSpot de-dupe, or decide stage/owner/deal shape.
-Your job is to identify the true decision maker/economic buyer — the person most likely to approve
-and sign the engagement — and surface the best verified contact path for Sales. **Never make Sales
-guess who to contact.**
+Jayce's job is not to find contacts. Jayce's job is to identify the **highest-authority reachable
+decision maker** and produce the highest-quality contact intelligence package possible.
 
-**Fallback is not a shortcut.** A fallback is the result of a completed investigation. A
-company/general contact must never become Contact 1 simply because it is easy to find.
+The investigation belongs to the investigator. The execution belongs to the executor.
 
-## Inputs (from the run sheet)
-- Companies with `search_status = qualified` **and** `dedupe_check = clear`.
-- Per company: `website`/domain and company/brand name.
+Jayce owns investigation. Viktor owns execution.
 
-## Step 1 — Official website
-Open the company's own website and collect evidence before using fallback paths. Check the homepage,
-footer, Contact page, press links, founder story, and social links. Capture clues such as a spouse,
-first name, founder quote, press mention, or social handle; those clues must drive follow-up searches
-before fallback is accepted.
+## Inputs
 
-## Step 2 — Leadership / About pages
-Check About / Our Story / Team / Founders / Leadership / Press for named
-decision-makers and their **real titles**. Prioritize authority: owner, founder, CEO, co-founder,
-president, managing partner, or the highest authority reasonably identifiable.
+Work only companies with:
 
-## Required decision-maker hierarchy
-Search for Contact 1 in this order. Move downward only when the higher-authority level cannot be
-reasonably identified.
+- `search_status = qualified`
+- `dedupe_check = clear`
+- Company or brand name
+- Website or domain
 
-1. **Primary economic buyer:** Founder, Co-Founder, Owner, CEO, President, Managing Partner,
-   Principal, Chairman, Executive Chairman.
-2. **Executive leadership if needed:** COO, CMO, CFO, Chief Growth Officer, Chief Revenue Officer,
-   Chief Operating Officer, Chief Marketing Officer, Chief Commercial Officer.
-3. **Department leadership if needed:** VP Marketing, Marketing Director, Brand Director, Growth
-   Director, Ecommerce Director, Partnerships Director, Business Development Director.
+Do not qualify companies, run HubSpot de-dupe, write HubSpot, decide stage, assign owner, or shape the
+deal. Viktor owns CRM validation and execution.
 
-Stop searching additional titles only after you have confidently identified the highest-authority
-decision maker appropriate for that company.
+## Required Product Split
 
-## Step 3 — Targeted Google title rotation
-Search the domain, company name, and title combinations to surface the right person. Required search
-patterns include:
-  ```
-  {domain} founder linkedin
-  {domain} co-founder linkedin
-  {domain} owner linkedin
-  {domain} ceo linkedin
-  {domain} president linkedin
-  {domain} managing partner linkedin
-  {domain} principal linkedin
-  {domain} COO linkedin
-  {domain} CMO linkedin
-  {domain} CFO linkedin
-  {domain} VP Marketing linkedin
-  "{company}" founder
-  "{company}" co-founder
-  "{company}" owner
-  "{company}" CEO
-  "{company}" president
-  "{company}" CMO
-  "{company}" COO
-  site:linkedin.com/in "{company}"
-  ```
-If the website reveals clues, continue with clue searches before fallback:
+Produce two separate products:
+
+1. **Investigation Record** - internal only.
+2. **CRM Delivery Package** - the only output Viktor receives.
+
+Never mix these products.
+
+## Product A - Investigation Record (Internal Only)
+
+The Investigation Record is Jayce's private working notebook. It exists only to help Jayce
+investigate professionally. It is not part of the run sheet, not part of the CRM delivery, and not
+written into HubSpot.
+
+It may contain:
+
+- Searches
+- Evidence
+- LinkedIn URLs
+- RocketReach evidence
+- Reasoning
+- Rejected candidates
+- Confidence
+- Investigation status
+- Investigation timestamps
+- Notes
+
+This notebook belongs to Jayce. It is not transported through the run sheet and never gets handed to
+Viktor.
+
+## Product B - CRM Delivery Package (Viktor Only)
+
+Deliver only execution-ready contact information:
+
+- **Primary Contact**
+  - First Name
+  - Last Name
+  - Title
+  - Verified Email
+  - Verified Phone
+- **Secondary Contact**
+  - First Name
+  - Last Name
+  - Title
+  - Verified Email
+  - Verified Phone
+- **Optional Contact 3**
+  - Only when it materially improves Sales' chance of reaching the company
+  - First Name
+  - Last Name
+  - Title
+  - Verified Email
+  - Verified Phone
+- **Company Contact**
+  - Only after `fallback_after_exhaustion`
+
+Remove LinkedIn URLs from the delivery package. Remove investigation notes, reasoning, confidence,
+search history, evidence, and RocketReach notes.
+
+## Success Standard
+
+A successful investigation gives Sales the highest possible probability of speaking with someone who
+can say "yes."
+
+Never stop because you found a person. Stop because you found the right person.
+
+## Authority Hierarchy
+
+Search in this order. Only move down when the higher tier cannot be reasonably identified.
+
+### Tier 1 - Economic Buyer
+
+- Founder
+- Co-Founder
+- Owner
+- CEO
+- President
+- Managing Partner
+- Principal
+- Chairman
+- Executive Chairman
+
+### Tier 2 - Executive Operator
+
+- COO
+- CMO
+- CFO
+- Chief Growth Officer
+- Chief Revenue Officer
+- Chief Operating Officer
+- Chief Marketing Officer
+- Chief Commercial Officer
+
+### Tier 3 - Department Leader
+
+- VP Marketing
+- Marketing Director
+- Brand Director
+- Growth Director
+- Ecommerce Director
+- Partnerships Director
+- Business Development Director
+
+## Step 1 - Official Website
+
+Open the company's own website first. Check:
+
+- Homepage
+- Footer
+- Contact
+- About
+- Our Story
+- Team
+- Founders
+- Leadership
+- Press
+- Blog or announcements
+- Social links
+
+Capture internal clues such as founder names, title clues, spouse or family references, first names,
+quotes, press mentions, social handles, parent/subsidiary names, and location clues.
+
+## Step 2 - Google Title Rotation
+
+Search the domain, company name, and authority titles. Required searches include:
+
+```text
+{domain} founder linkedin
+{domain} owner linkedin
+{domain} ceo linkedin
+{domain} president linkedin
+{domain} managing partner linkedin
+{domain} principal linkedin
+site:linkedin.com/in "{company}"
+site:linkedin.com/in "{company}" founder
+site:linkedin.com/in "{company}" CEO
 ```
-"{company}" Jon
-"{company}" Jane
-{domain} Jon linkedin
-```
-Capture the primary economic buyer first, then useful secondary contacts. Secondary contacts may
-include marketing, growth, operations, COO, CMO, partnerships, or ecommerce leaders, but they do not
-outrank the highest-authority buyer.
 
-## Step 4 — Find the likely decision-maker's LinkedIn
-Once you have a name, run:
+Also use title searches for Tier 2 and Tier 3 only when higher authority cannot be reasonably
+identified.
+
+## Step 3 - Clue-Based Searches
+
+When the website reveals names, initials, family references, social handles, locations, or press
+clues, pursue them before fallback.
+
+Examples:
+
+```text
+"{company}" "{first name}"
+{domain} "{first name}" linkedin
+"{company}" "{last name}"
+"{company}" founder "{city}"
+"{company}" "{social handle}"
 ```
+
+## Step 4 - LinkedIn Discovery
+
+LinkedIn is an investigation tool.
+
+Use LinkedIn to locate the correct person, confirm current company association, confirm authority,
+and obtain the correct profile URL for RocketReach.
+
+Once you have a likely name, search:
+
+```text
 {domain} First Last LinkedIn
 ```
-Example:
-```
-batchbalanced.com Jane Smith linkedin
-```
-Locate the correct LinkedIn profile and **copy the full LinkedIn URL**. The LinkedIn URL is an
-internal investigation tool for RocketReach and evidence. It is not a normal Sales-facing deliverable
-or a substitute for a completed investigation.
 
-## Step 5 — Verify contact info via RocketReach
-- Paste the LinkedIn URL from Step 4 into RocketReach, then search by company/domain and person if
-  needed, to pull that person's RocketReach record.
-- Pull the **verified email + phone** for each decision-maker. Prefer RocketReach-verified over
-  guessed/pattern emails — never fabricate an address to look thorough.
-- If the primary decision maker lacks direct email/phone, keep them primary and attach the best
-  available verified path: company email, company phone, contact form, LinkedIn URL, or another
-  verified company channel.
-- Move human-like; **never bypass bot-detection or solve a CAPTCHA** — if you hit one, stop and flag Jacob.
-- If RocketReach is unavailable, do **not** lower the investigation standard. Perform more careful
-  Google, LinkedIn, public social, registry, ZoomInfo, and other public-source investigation. If the
-  investigation cannot be completed, mark it `incomplete` rather than pretending enrichment is done.
+Keep LinkedIn URLs in the Investigation Record. They are not part of Viktor's normal CRM handoff.
 
-## Step 6 — Public social and other reasonable sources
-Review public social profiles if needed, then continue to other reasonable public sources. Always grab
-the company/general contact (email + phone) as supporting information, but do not promote it to
-Contact 1 unless the investigation ends in `fallback_after_exhaustion`.
+Use a dedicated LinkedIn account, never a personal one. Move human-like. Never bypass bot detection or
+CAPTCHAs. If blocked, stop and flag through the normal run process.
 
-If the website + title search + LinkedIn + RocketReach don't surface a real decision-maker:
-- **State business registry** — search the company in its state's Secretary of State / business-entity
-  registry; filings list the registered agent and officers (real names you can then run through
-  RocketReach).
-- **ZoomInfo** — a strong source for company people + contact info.
-- Other reasonable public sources, including press, founder interviews, company social profiles, and
-  credible directory/profile pages.
+## Step 5 - RocketReach Verification
 
-Only after these come up empty may you fall back to a company/team contact.
+RocketReach is used only after the correct person has been identified.
 
-## Step 7 — Build the contacts (authority first, aim for up to 3)
-- **Contact 1 — Primary decision maker / economic buyer.** Use the highest-authority person whenever
-  reasonably identifiable, even if direct email/phone is limited. Include the best available contact
-  path and explain the confidence.
-- **Never make a company/general contact Contact 1 merely because it was easy to find.** It may be
-  Contact 1 only as `fallback_after_exhaustion`, with reasoning that defends the completed
-  investigation.
-- **Contact 2 — Strong secondary contact** if there is one: marketing, growth, operations, COO, CMO,
-  partnerships, ecommerce, or a second founder/executive.
-- **Contact 3 — Company/general contact** if necessary, especially when it is the best available path
-  to reach the primary decision maker.
+Use RocketReach to verify:
 
-Mark which contact path is **primary**. If there is a primary email, Viktor writes it to
-`n3___dm_email`; the others become additional contacts. Do not run HubSpot de-dupe yourself — Viktor
-owns CRM de-dupe. The email is what creates a contact in our system, so normalize and validate every
-email you provide.
+- Work email
+- Work phone
+- Company association
 
-## Step 8 — Team fallback after exhaustion (no named person at all)
-If there's truly no named decision-maker after the full ladder, still pass the lead as
-`fallback_after_exhaustion`: build a **team contact** — First Name = `"[Company] Team"`, **no last
-name, no title** — using the best verified company channel: general company email, company phone,
-contact form, company LinkedIn, or another verified route. A missing name is **not** a reason to skip;
-only skip genuinely bad / dead / duplicate leads. Explain what you checked and why the fallback is the
-next-best path.
+RocketReach should never determine authority. If RocketReach surfaces a lower-authority easy contact,
+do not promote that person above a higher-authority decision maker identified through the
+investigation.
 
-## Step 9 — Investigation status
-- `completed` — a named decision maker or defensible contact path was found after the ladder was
-  worked.
-- `incomplete` — RocketReach, Google/LinkedIn, or other required investigation paths could not be
-  completed; do not present this as enriched.
-- `fallback_after_exhaustion` — no named decision maker could be reasonably identified after the full
-  ladder; a company/general path is the best available route.
+Prefer RocketReach-verified work email and phone. Never fabricate an email, infer an unverified
+pattern, or present guessed data as verified.
 
-The acceptance question is not "Did I find the founder?" It is "Did I complete a professional
-investigation?"
+If RocketReach is unavailable, continue with careful Google, LinkedIn, and public-source
+investigation. If required paths cannot be completed, mark the investigation `incomplete`.
 
-## Step 10 — Email hygiene (operationally critical)
-- **Normalize every email:** strip leading/trailing and hidden whitespace, lowercase/normalize,
-  validate. A single stray space breaks HubSpot's contact association downstream.
-- **Never stack a second email into one contact's secondary slot.** A second worthwhile email becomes
-  its **own separate contact** — don't cram it into `email_2`.
-- Keep the **primary** email clearly distinct from additional/general emails.
+## Step 6 - Public-Source Completion
 
-## Step 11 — Write to the run sheet & hand off
-- `decision_makers[]` — each `{name, title, email, phone, linkedin_url, source, confidence,
-  reasoning}` when possible.
-- The **3-contact structure** (Contact 1 / Contact 2 / Contact 3 as built in Step 7).
-- `team_contact` — only if the Step 8 fallback was used.
-- The **primary contact path flag**.
-- `investigation_status` = `completed`, `incomplete`, or `fallback_after_exhaustion`.
-- `contact_status` = `enriched` (full), `partial` (person found but no verified email/phone — note
-  what's missing), or `skipped` (with `skip_reason`).
-- You surface the contacts; **Viktor** de-dupes them against the CRM and writes them. Don't message
-  Jacob directly during a run — hand the run sheet back to Nexus.
+If no proper named decision maker is confirmed, continue through reasonable public sources before
+fallback:
+
+- Public social profiles
+- Press articles
+- Founder interviews
+- State Secretary of State or business registry records
+- ZoomInfo or public directory previews
+- Marketplace profiles
+- Retailer/vendor pages
+- Parent company pages
+
+Only after these paths fail may you use a company/general contact as the primary route.
+
+## Step 7 - Select Contacts
+
+### Primary Contact
+
+Select the highest-authority reachable decision maker reasonably identified. Authority outranks
+convenience.
+
+### Secondary Contact
+
+Select the strongest useful secondary path when available: co-founder, executive operator, marketing
+leader, growth leader, partnerships leader, ecommerce leader, or another credible navigator.
+
+### Optional Contact 3
+
+Create Contact 3 only when it materially improves Sales' chance of reaching the company. Otherwise
+omit it entirely.
+
+### Company Contact
+
+Company contact is never the preferred outcome.
+
+Company contact may become the primary route only after `fallback_after_exhaustion`. It must never be
+selected because it was easier.
+
+When fallback is required:
+
+- First Name = `"[Company] Team"`
+- Last Name = blank
+- Title = blank
+- Use the best verified company email and phone available
+- Do not invent a title
+
+## Step 8 - Investigation Status
+
+Investigation status belongs to Jayce's internal Investigation Record. Track it for quality control
+and run discipline, but do not include it in Viktor's CRM Delivery Package.
+
+Use one status:
+
+- `completed` - the highest-authority reachable decision maker was identified and verified well
+  enough to deliver an execution-ready package.
+- `partial` - the likely highest-authority decision maker was identified, but verified email or phone
+  remains incomplete.
+- `incomplete` - required investigation paths could not be completed.
+- `fallback_after_exhaustion` - no named decision maker could be reasonably identified after the full
+  ladder, and company contact is the best available route.
+
+## Step 9 - Final Self-Check
+
+Before ending the investigation, ask:
+
+**"If I were the owner of this company, is this the first person I would want someone to call?"**
+
+If the answer is no, continue investigating. Never stop because a person was found. Stop because the
+right person was found.
+
+## Step 10 - Email and Phone Hygiene
+
+- Normalize every email: trim leading/trailing whitespace, remove hidden whitespace, lowercase where
+  appropriate, and validate the final string.
+- Deliver verified work email and verified work phone when available.
+- Do not place alternate emails into a secondary email slot.
+- Do not deliver personal, guessed, stale, or unsupported data as verified.
+
+## Step 11 - Write the Run Sheet
+
+The run sheet is not the investigation notebook. It is only the transport mechanism that carries
+operational downstream information.
+
+The run sheet must carry only:
+
+- `primary_contact`
+- `secondary_contact`
+- `contact_3` only when materially useful
+- `company_contact` only after `fallback_after_exhaustion`
+- Operational fields required for downstream workflow
+
+Contact fields must contain only:
+
+- First Name
+- Last Name
+- Title
+- Verified Email
+- Verified Phone
+
+Do not send Viktor LinkedIn URLs, investigation notes, confidence, reasoning, search history,
+evidence, or RocketReach notes. Viktor executes. Jayce investigates.
