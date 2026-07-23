@@ -48,9 +48,16 @@ meaningful results of evaluation. Exceptions remain available for operational
 failures. Response Generation owns language only; it neither decides policy nor
 orchestrates the request path.
 
-Conversation persistence, Knowledge, Memory, and Tools may be coordinated by
-future Application use cases. They are deliberately absent from this
-orchestration, and Conversation mutation remains outside it.
+`createProcessConversationTurn` extends that gated evaluation into the first
+complete runtime. A permitted result is the only path that appends the incoming
+messages as a Conversation `Turn` and saves the updated aggregate through
+`ConversationStore`. Persistence follows successful generation, preventing a
+generation failure from recording partial conversational progress.
+
+Response Generation still owns language only and never mutates Conversation.
+Prohibited and escalation-required decisions remain values and perform no
+mutation or persistence. Knowledge, Memory, and Tool execution remain future
+Application orchestration points.
 
 ## Why Implementations Are Separated
 

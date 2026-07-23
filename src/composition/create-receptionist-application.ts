@@ -1,5 +1,6 @@
 import { createConversationUseCases } from "../application/implementations/create-conversation-use-cases.js";
 import { createEvaluateAction } from "../application/implementations/create-evaluate-action.js";
+import { createProcessConversationTurn } from "../application/implementations/create-process-conversation-turn.js";
 import { DeterministicBehaviorEngine } from "../behavior/implementations/index.js";
 import type { ConversationId, TurnId } from "../conversation/index.js";
 import {
@@ -44,6 +45,7 @@ export function createMockReceptionistApplication(): MockReceptionistApplication
   const knowledgeRetriever = new UnsupportedKnowledgeRetriever();
   const memoryStore = new UnsupportedMemoryStore();
   const toolExecutor = new UnsupportedToolExecutor();
+  const turnIdGenerator = createIdGenerator<TurnId>("turn");
 
   // Tools remain an intentionally unsupported edge in this vertical slice.
   void toolExecutor;
@@ -51,13 +53,23 @@ export function createMockReceptionistApplication(): MockReceptionistApplication
   const conversationUseCases = createConversationUseCases(
     conversationStore,
     createIdGenerator<ConversationId>("conversation"),
-    createIdGenerator<TurnId>("turn"),
+    turnIdGenerator,
+  );
+  const evaluateAction = createEvaluateAction(
+    behaviorEngine,
+    responseGenerator,
+  );
+  const processConversationTurn = createProcessConversationTurn(
+    evaluateAction,
+    conversationStore,
+    turnIdGenerator,
   );
 
   return {
     ...conversationUseCases,
     recallMemory: (request) => memoryStore.recall(request),
     retrieveKnowledge: (request) => knowledgeRetriever.retrieve(request),
-    evaluateAction: createEvaluateAction(behaviorEngine, responseGenerator),
+    evaluateAction,
+    processConversationTurn,
   };
 }

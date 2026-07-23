@@ -89,6 +89,53 @@ persisted by this use case.
 Future use cases may extend the sequence with Conversation persistence,
 Knowledge, Memory, and Tools while preserving the same ownership boundaries.
 
+## Complete Conversation-Turn Runtime
+
+`ProcessConversationTurn` is the first complete turn runtime:
+
+```text
+Application
+  -> EvaluateAction
+    -> Behavior
+    -> Response Generation (permitted only)
+  -> Conversation update (permitted only)
+  -> ConversationStore (permitted only)
+  -> Return
+```
+
+Application owns this runtime because sequencing capabilities and deciding when
+state becomes durable are use-case responsibilities. Behavior gates the entire
+state-changing path: prohibited and escalation-required decisions return
+immediately as typed values, without generation, mutation, or persistence.
+These outcomes are normal policy results rather than exceptional operational
+failures.
+
+Response Generation produces language but never mutates Conversation. The
+current response result is deliberately returned separately because the mock
+generator supplies text, not the identity, author, and timestamp required for a
+Conversation-owned `Message`. Application appends the domain-valid incoming
+messages as a new `Turn` only after generation succeeds. It then persists the
+complete updated aggregate through `ConversationStore`, so a generation failure
+cannot leave a partially completed turn in storage.
+
+The orchestration leaves explicit future insertion points without implementing
+their capabilities:
+
+```text
+Behavior
+  -> Knowledge
+  -> Memory
+  -> Response Generation
+  -> Conversation update
+  -> Tool execution
+  -> ConversationStore
+```
+
+Future Knowledge and Memory outputs can enrich approved generation context;
+future Tool execution can occur at its explicit post-update orchestration
+point; and durable persistence adapters can replace the in-memory
+`ConversationStore` without changing the use case.
+
 ## Example Future Orchestration Flow
 
 A future implementation of `ContinueConversation` could:
