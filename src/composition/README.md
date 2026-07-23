@@ -2,10 +2,9 @@
 
 ## Purpose
 
-`composition/` defines the boundary at which a future Receptionist application
-will be assembled. It names the complete set of inward dependencies and the
-transport-neutral application surface produced by assembly. This sprint
-contains contracts only; there is no composition root or runtime wiring yet.
+`composition/` defines the boundary at which the Receptionist application is
+assembled. It names the inward dependencies and the transport-neutral
+application surface produced by assembly.
 
 ## What Composition Owns
 
@@ -60,9 +59,10 @@ participate. `ReceptionistApplication` only groups the existing Application
 use-case contracts into one explicit surface. It does not implement, wrap,
 sequence, or reinterpret them.
 
-An eventual composition root may construct use-case implementations with their
-required ports. The use cases remain responsible for orchestration after
-construction.
+The composition root constructs use-case implementations with their required
+ports. `createMockReceptionistApplication` connects the deterministic Behavior
+engine and mock Response Generator to `createEvaluateAction`; the Application
+implementation, not Composition, remains responsible for their sequencing.
 
 ## Relationship to Ports
 

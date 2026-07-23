@@ -9,8 +9,9 @@ knowledge retrieval, memory recall, response generation, and persistence.
 Application code decides **when** those capabilities participate in a use case.
 It does not decide **how** any capability is implemented.
 
-This directory contains use-case contracts only. It contains no handlers,
-business entities, adapters, provider integrations, or runtime behavior.
+Contracts live in this directory and concrete orchestration lives in
+`implementations/`. The layer contains no handlers, adapters, provider
+integrations, or transport behavior.
 
 ## Relationship to the Domain
 
@@ -66,7 +67,29 @@ Domain code does not depend on the Application Layer. Port implementations and
 transport adapters depend on inward contracts; application code never depends
 on those outward implementations.
 
-## Example Orchestration Flow
+## Behavior-Gated Orchestration
+
+`EvaluateAction` establishes the request path:
+
+```text
+Application -> Behavior -> Response Generation
+                              |
+                              v
+                         Conversation
+```
+
+Application owns the sequence because orchestration is a use-case concern.
+Behavior exclusively owns the policy decision, and Response Generation owns
+language production. Prohibited and escalation-required decisions are returned
+as typed policy outcomes rather than thrown because they are expected results,
+not operational failures. Only a permitted decision reaches Response
+Generation, and Conversation is accepted as context but is not mutated or
+persisted by this use case.
+
+Future use cases may extend the sequence with Conversation persistence,
+Knowledge, Memory, and Tools while preserving the same ownership boundaries.
+
+## Example Future Orchestration Flow
 
 A future implementation of `ContinueConversation` could:
 

@@ -1,6 +1,6 @@
 import type { ContinueConversation } from "../application/continue-conversation.js";
 import type { EndConversation } from "../application/end-conversation.js";
-import type { GenerateResponse } from "../application/generate-response.js";
+import type { EvaluateAction } from "../application/evaluate-action.js";
 import type { RecallMemory } from "../application/recall-memory.js";
 import type { RetrieveKnowledge } from "../application/retrieve-knowledge.js";
 import type { StartConversation } from "../application/start-conversation.js";
@@ -28,8 +28,5 @@ export interface ReceptionistApplication<
     KnowledgeRequest,
     KnowledgeResult
   >;
-  readonly generateResponse: GenerateResponse<
-    GenerationContext,
-    GeneratedResponse
-  >;
+  readonly evaluateAction: EvaluateAction<GenerationContext, GeneratedResponse>;
 }

@@ -29,6 +29,29 @@ dependencies, and assembles them into a `ReceptionistApplication`. Application
 implementations do not import Composition, discover dependencies at runtime, or
 control adapter lifetimes.
 
+## Behavior-Gated Response Generation
+
+`createEvaluateAction` is the first executable cross-capability orchestration.
+Application owns this sequencing because deciding when capabilities run is a
+use-case responsibility:
+
+1. Behavior evaluates the proposed action and remains the sole owner of the
+   policy decision.
+2. Prohibited and escalation-required decisions are returned as typed outcomes;
+   they do not invoke Response Generation or mutate Conversation.
+3. Only a permitted decision allows Response Generation to produce language.
+4. The permitted result retains the complete Behavior decision alongside the
+   generated response.
+
+Policy outcomes are values rather than exceptions because they are expected,
+meaningful results of evaluation. Exceptions remain available for operational
+failures. Response Generation owns language only; it neither decides policy nor
+orchestrates the request path.
+
+Conversation persistence, Knowledge, Memory, and Tools may be coordinated by
+future Application use cases. They are deliberately absent from this
+orchestration, and Conversation mutation remains outside it.
+
 ## Why Implementations Are Separated
 
 Keeping contracts and implementations in separate directories makes the stable

@@ -1,5 +1,5 @@
 import { createConversationUseCases } from "../application/implementations/create-conversation-use-cases.js";
-import { createGenerateResponse } from "../application/implementations/create-generate-response.js";
+import { createEvaluateAction } from "../application/implementations/create-evaluate-action.js";
 import { DeterministicBehaviorEngine } from "../behavior/implementations/index.js";
 import type { ConversationId, TurnId } from "../conversation/index.js";
 import {
@@ -45,10 +45,6 @@ export function createMockReceptionistApplication(): MockReceptionistApplication
   const memoryStore = new UnsupportedMemoryStore();
   const toolExecutor = new UnsupportedToolExecutor();
 
-  // Behavior is selected here, but the current Application contracts expose no
-  // Behavior use case to receive it. Composition must not invoke policy or hide
-  // Behavior orchestration inside response generation.
-  void behaviorEngine;
   // Tools remain an intentionally unsupported edge in this vertical slice.
   void toolExecutor;
 
@@ -62,6 +58,6 @@ export function createMockReceptionistApplication(): MockReceptionistApplication
     ...conversationUseCases,
     recallMemory: (request) => memoryStore.recall(request),
     retrieveKnowledge: (request) => knowledgeRetriever.retrieve(request),
-    generateResponse: createGenerateResponse(responseGenerator),
+    evaluateAction: createEvaluateAction(behaviorEngine, responseGenerator),
   };
 }
