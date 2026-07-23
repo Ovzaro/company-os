@@ -1,12 +1,12 @@
 import { createConversationUseCases } from "../application/implementations/create-conversation-use-cases.js";
 import { createGenerateResponse } from "../application/implementations/create-generate-response.js";
+import { DeterministicBehaviorEngine } from "../behavior/implementations/index.js";
 import type { ConversationId, TurnId } from "../conversation/index.js";
 import {
   InMemoryConversationStore,
   MockResponseGenerator,
 } from "../infrastructure/index.js";
 import {
-  UnsupportedBehaviorEngine,
   UnsupportedKnowledgeRetriever,
   UnsupportedMemoryStore,
   UnsupportedToolExecutor,
@@ -40,14 +40,16 @@ function createIdGenerator<Identifier>(
 export function createMockReceptionistApplication(): MockReceptionistApplication {
   const conversationStore = new InMemoryConversationStore();
   const responseGenerator = new MockResponseGenerator();
-  const behaviorEngine = new UnsupportedBehaviorEngine();
+  const behaviorEngine = new DeterministicBehaviorEngine();
   const knowledgeRetriever = new UnsupportedKnowledgeRetriever();
   const memoryStore = new UnsupportedMemoryStore();
   const toolExecutor = new UnsupportedToolExecutor();
 
-  // These instances make the intentionally unsupported edges explicit at the
-  // composition root without introducing successful no-op capability behavior.
+  // Behavior is selected here, but the current Application contracts expose no
+  // Behavior use case to receive it. Composition must not invoke policy or hide
+  // Behavior orchestration inside response generation.
   void behaviorEngine;
+  // Tools remain an intentionally unsupported edge in this vertical slice.
   void toolExecutor;
 
   const conversationUseCases = createConversationUseCases(

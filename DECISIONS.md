@@ -97,3 +97,20 @@ Consequences:
 - Conversation and Memory remain independent bounded contexts.
 - Behavior can evolve without provider dependencies.
 - Adapters and application workflows translate at boundaries instead of shaping the domain.
+
+Decision #008
+
+Behavior evaluation is deterministic, explicit, and fail-closed.
+
+Reason:
+
+Employee authority must be reviewable and reproducible before response generation or tool execution, and authority must never be inferred from ambiguity, prompts, provider output, or Tool availability.
+
+Consequences:
+
+- Behavior returns typed permission, prohibition, or escalation decisions with stable rule and reason identifiers.
+- Explicit escalation and unsupported scope take precedence over permission.
+- Ambiguous authority or policy context cannot produce permission.
+- Side-effecting actions and tool execution require explicit prior authorization.
+- Policy outcomes are returned as data; exceptions are reserved for operational or programming failures.
+- Application owns orchestration, while Composition selects the implementation without making policy decisions.
