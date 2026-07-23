@@ -1,13 +1,91 @@
-# Application
+# Application Layer
 
-## Why this directory exists
+## Responsibilities
 
-`application/` coordinates use cases and the interaction lifecycle across domain capabilities.
+The Application Layer defines the use cases that coordinate the receptionist's
+work. It may sequence conversation lifecycle operations, behavior evaluation,
+knowledge retrieval, memory recall, response generation, and persistence.
 
-## What belongs here
+Application code decides **when** those capabilities participate in a use case.
+It does not decide **how** any capability is implemented.
 
-Use-case handlers, application ports, commands, queries, and orchestration that depends on abstractions belong here.
+This directory contains use-case contracts only. It contains no handlers,
+business entities, adapters, provider integrations, or runtime behavior.
 
-## What does not belong here
+## Relationship to the Domain
 
-Transport handling, vendor SDK calls, persistence details, channel-specific decisions, and core policy definitions do not belong here.
+The Application Layer orchestrates the domain and uses domain-owned types at its
+boundary where those types already exist. It does not redefine, mutate, or
+weaken domain invariants.
+
+The conversation aggregate remains responsible for its lifecycle, participants,
+turn ordering, messages, and internal consistency. Application use cases are
+responsible for coordinating work around that aggregate; they are not a second
+domain model.
+
+## Relationship to Ports
+
+Future ports will expose capabilities owned by Conversation, Knowledge, Memory,
+Behavior, Response Generation, and Persistence. Use-case implementations will
+depend on those abstractions.
+
+Some contracts in this directory are generic placeholders for capability-owned
+request and result types that do not exist yet. The type parameters must
+eventually be supplied by the capability that owns their meaning. They must not
+be replaced with application-owned DTOs or vendor-shaped types.
+
+Ports are dependencies of use-case implementations, not implementations
+themselves. No port is defined in this directory during this sprint.
+
+## Relationship to Infrastructure
+
+Infrastructure will implement ports and will be connected to use cases at a
+future composition root. The Application Layer does not import infrastructure,
+select implementations, inspect storage technology, or know which external
+system fulfills a capability.
+
+Transport adapters may invoke application use cases, but transport concerns and
+API contracts do not enter this layer.
+
+## Dependency Direction
+
+Dependencies point inward:
+
+```text
+transport or infrastructure adapter
+              |
+              v
+      application use case
+          |         |
+          v         v
+    domain types   capability-owned ports
+```
+
+The Application Layer may depend on the Domain and future port contracts.
+Domain code does not depend on the Application Layer. Port implementations and
+transport adapters depend on inward contracts; application code never depends
+on those outward implementations.
+
+## Example Orchestration Flow
+
+A future implementation of `ContinueConversation` could:
+
+1. Ask a persistence port for the conversation.
+2. coordinate domain validation of the incoming conversational progress;
+3. ask a memory port to recall relevant durable context;
+4. ask a knowledge port for relevant evidence;
+5. ask a behavior port for the applicable constraints and decisions;
+6. ask a response-generation port to produce a response;
+7. coordinate domain validation of the resulting conversation state; and
+8. ask a persistence port to save that state.
+
+This is an architectural example, not prescribed runtime behavior. The use case
+must preserve capability boundaries: conversation does not become memory,
+generation does not become behavior, and persistence does not make domain
+decisions.
+
+## Explicit Exclusions
+
+This layer owns no providers, HTTP concerns, framework integration, channel
+logic, persistence implementation, serialization, DTOs, API contracts, business
+entities, or composition-root configuration.
