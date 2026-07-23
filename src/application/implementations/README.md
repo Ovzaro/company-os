@@ -1,0 +1,66 @@
+# Application Implementations
+
+## Purpose
+
+This directory contains the concrete orchestration that fulfills contracts
+defined by the Application layer. An implementation coordinates domain values
+and inward-facing ports to perform an application use case. It does not redefine
+the contract or own the mechanics behind a port.
+
+## Relationship to Application Contracts
+
+Application contracts remain in the parent `application/` directory. They
+describe the callable use-case surface, inputs, outputs, failure expectations,
+and ownership boundaries. Implementations import and fulfill those contracts.
+Contracts must never import this directory or otherwise depend on an
+implementation.
+
+## Relationship to Ports
+
+Implementations may depend on interfaces from `ports/` when orchestration needs
+a capability or platform service. They receive those dependencies explicitly
+and invoke them through repository-owned abstractions. Implementations must
+never import Infrastructure or select a concrete adapter.
+
+## Relationship to Composition
+
+Composition imports application implementations, constructs their port
+dependencies, and assembles them into a `ReceptionistApplication`. Application
+implementations do not import Composition, discover dependencies at runtime, or
+control adapter lifetimes.
+
+## Why Implementations Are Separated
+
+Keeping contracts and implementations in separate directories makes the stable
+application boundary distinct from its current orchestration. Callers can
+depend on contracts without acquiring construction details, and orchestration
+can evolve without obscuring the use-case surface or reversing dependency
+direction.
+
+## Dependency Direction
+
+```text
+Composition ---> Application implementations ---> Application contracts
+                            |
+                            +---------------------> Ports
+
+Infrastructure ----------------------------------> Ports
+```
+
+Dependencies point inward. Application contracts and Ports do not depend on
+application implementations. Application implementations do not depend on
+Composition or Infrastructure.
+
+## Rules for Future Implementations
+
+- Fulfill an existing Application contract without weakening its invariants.
+- Keep use-case orchestration here; keep capability mechanics behind Ports.
+- Receive every dependency explicitly through a factory or constructor.
+- Depend only on domain types, Application contracts, and inward-facing Ports.
+- Never import Infrastructure, Composition, providers, transports, or channels.
+- Never introduce a service locator, dependency injection framework, ambient
+  configuration, or hidden global dependency.
+- Do not redefine capability-owned request or result types for wiring
+  convenience.
+- Preserve operational failures and outcomes in the vocabulary of the relevant
+  contract and port.
