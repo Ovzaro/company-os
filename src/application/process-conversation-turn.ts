@@ -7,6 +7,7 @@ import type {
   Message,
   NonEmptyReadonlyArray,
 } from "../conversation/index.js";
+import type { GenerationIntent } from "../response/contracts/index.js";
 
 type DecisionWithOutcome<Outcome extends BehaviorDecision["outcome"]> = Extract<
   BehaviorDecision,
@@ -42,9 +43,9 @@ export type ProcessConversationTurnResult<GeneratedResponse> =
  * A future response-to-message boundary can add generated messages when the
  * Response capability defines the metadata needed to form them.
  */
-export type ProcessConversationTurn<GenerationContext, GeneratedResponse> = (
+export type ProcessConversationTurn<GeneratedResponse> = (
   conversation: Conversation,
   incomingMessages: NonEmptyReadonlyArray<Message>,
   behaviorRequest: BehaviorRequest,
-  generationContext: GenerationContext,
+  generationIntent: GenerationIntent,
 ) => Promise<ProcessConversationTurnResult<GeneratedResponse>>;

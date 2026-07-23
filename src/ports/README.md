@@ -45,14 +45,15 @@ in Application and avoid creating application DTOs in this directory.
 
 Every capability port has exactly one owner:
 
-| Port                 | Owner               |
-| -------------------- | ------------------- |
-| `ConversationStore`  | Conversation        |
-| `MemoryStore`        | Memory              |
-| `KnowledgeRetriever` | Knowledge           |
-| `BehaviorEngine`     | Behavior            |
-| `ResponseGenerator`  | Response Generation |
-| `ToolExecutor`       | Tools               |
+| Port                       | Owner               |
+| -------------------------- | ------------------- |
+| `ConversationStore`        | Conversation        |
+| `MemoryStore`              | Memory              |
+| `KnowledgeRetriever`       | Knowledge           |
+| `BehaviorEngine`           | Behavior            |
+| `GenerationContextBuilder` | Response Generation |
+| `ResponseGenerator`        | Response Generation |
+| `ToolExecutor`             | Tools               |
 
 `Clock` and `IdGenerator` are shared platform service ports because time
 observation and identifier allocation have no more specific capability owner.

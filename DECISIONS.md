@@ -114,3 +114,28 @@ Consequences:
 - Side-effecting actions and tool execution require explicit prior authorization.
 - Policy outcomes are returned as data; exceptions are reserved for operational or programming failures.
 - Application owns orchestration, while Composition selects the implementation without making policy decisions.
+
+Decision #009
+
+Generation context is repository-owned, provider-neutral, behavior-constrained,
+and assembled only after permission.
+
+Reason:
+
+Response Generation needs one deliberate, auditable contract for approved
+Conversation, Behavior, Knowledge, and Memory contributions without allowing
+callers or providers to define prompts as the inward boundary.
+
+Consequences:
+
+- Application invokes context assembly only after Behavior permits an action.
+- Callers supply a typed response intent rather than assembled context or
+  authorization data.
+- Behavior rule, reason, identities, and mandatory constraints reach Response
+  Generation unchanged.
+- Missing Knowledge and Memory contributions are explicit and cannot be
+  fabricated by the builder or generator.
+- Conversation is exposed through a bounded projection rather than the complete
+  aggregate or unlimited history.
+- Providers translate `GenerationContext` at the outer boundary and cannot
+  redefine it.

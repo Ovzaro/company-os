@@ -12,24 +12,21 @@ import type {
   ProcessConversationTurnResult,
 } from "../process-conversation-turn.js";
 
-export function createProcessConversationTurn<
-  GenerationContext,
-  GeneratedResponse,
->(
-  evaluateAction: EvaluateAction<GenerationContext, GeneratedResponse>,
+export function createProcessConversationTurn<GeneratedResponse>(
+  evaluateAction: EvaluateAction<GeneratedResponse>,
   conversationStore: ConversationStore,
   turnIdGenerator: IdGenerator<TurnId>,
-): ProcessConversationTurn<GenerationContext, GeneratedResponse> {
+): ProcessConversationTurn<GeneratedResponse> {
   return async (
     conversation,
     incomingMessages,
     behaviorRequest,
-    generationContext,
+    generationIntent,
   ): Promise<ProcessConversationTurnResult<GeneratedResponse>> => {
     const evaluation = await evaluateAction(
       conversation,
       behaviorRequest,
-      generationContext,
+      generationIntent,
     );
 
     if (evaluation.outcome === "prohibited") {

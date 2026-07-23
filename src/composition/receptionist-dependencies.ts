@@ -1,6 +1,7 @@
 import type { BehaviorEngine } from "../ports/behavior-engine.js";
 import type { Clock } from "../ports/clock.js";
 import type { ConversationStore } from "../ports/conversation-store.js";
+import type { GenerationContextBuilder } from "../ports/generation-context-builder.js";
 import type { IdGenerator } from "../ports/id-generator.js";
 import type { KnowledgeRetriever } from "../ports/knowledge-retriever.js";
 import type { MemoryStore } from "../ports/memory-store.js";
@@ -46,6 +47,7 @@ export interface ReceptionistDependencies<
     KnowledgeResult
   >;
   readonly behaviorEngine: BehaviorEngine<BehaviorRequest, BehaviorDecision>;
+  readonly generationContextBuilder: GenerationContextBuilder;
   readonly responseGenerator: ResponseGenerator<
     GenerationRequest,
     GenerationResult

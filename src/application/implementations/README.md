@@ -39,8 +39,11 @@ use-case responsibility:
    policy decision.
 2. Prohibited and escalation-required decisions are returned as typed outcomes;
    they do not invoke Response Generation or mutate Conversation.
-3. Only a permitted decision allows Response Generation to produce language.
-4. The permitted result retains the complete Behavior decision alongside the
+3. Only a permitted decision is passed to the Response-owned deterministic
+   context builder together with Conversation and the caller's typed intent.
+4. Response Generation receives the resulting approved context and produces
+   language.
+5. The permitted result retains the complete Behavior decision alongside the
    generated response.
 
 Policy outcomes are values rather than exceptions because they are expected,

@@ -61,8 +61,9 @@ sequence, or reinterpret them.
 
 The composition root constructs use-case implementations with their required
 ports. `createMockReceptionistApplication` connects the deterministic Behavior
-engine and mock Response Generator to `createEvaluateAction`; the Application
-implementation, not Composition, remains responsible for their sequencing.
+engine, deterministic Generation Context Builder, and mock Response Generator
+to `createEvaluateAction`; the Application implementation, not Composition,
+remains responsible for their sequencing and context assembly.
 That same `EvaluateAction`, the in-memory `ConversationStore`, and a shared turn
 identifier generator are passed to `createProcessConversationTurn`.
 Composition only assembles these dependencies; the new Application

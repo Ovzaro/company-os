@@ -18,7 +18,6 @@ export interface ReceptionistApplication<
   MemoryResult,
   KnowledgeRequest,
   KnowledgeResult,
-  GenerationContext,
   GeneratedResponse,
 > {
   readonly startConversation: StartConversation;
@@ -29,9 +28,6 @@ export interface ReceptionistApplication<
     KnowledgeRequest,
     KnowledgeResult
   >;
-  readonly evaluateAction: EvaluateAction<GenerationContext, GeneratedResponse>;
-  readonly processConversationTurn: ProcessConversationTurn<
-    GenerationContext,
-    GeneratedResponse
-  >;
+  readonly evaluateAction: EvaluateAction<GeneratedResponse>;
+  readonly processConversationTurn: ProcessConversationTurn<GeneratedResponse>;
 }

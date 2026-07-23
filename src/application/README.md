@@ -110,6 +110,12 @@ immediately as typed values, without generation, mutation, or persistence.
 These outcomes are normal policy results rather than exceptional operational
 failures.
 
+Application passes a `GenerationIntent`, not caller-assembled context. After
+Behavior permits the action, the Response-owned `GenerationContextBuilder`
+projects approved Conversation data and carries the permitted rule, reason,
+identities, and mandatory constraints to the generator. Composition wires the
+builder but never assembles context fields.
+
 Response Generation produces language but never mutates Conversation. The
 current response result is deliberately returned separately because the mock
 generator supplies text, not the identity, author, and timestamp required for a

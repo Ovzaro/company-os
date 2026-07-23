@@ -13,6 +13,7 @@ import {
   UnsupportedToolExecutor,
 } from "../infrastructure/placeholders/unsupported-capabilities.js";
 import type { IdGenerator } from "../ports/id-generator.js";
+import { DeterministicGenerationContextBuilder } from "../response/implementations/index.js";
 import type { ReceptionistApplication } from "./receptionist-application.js";
 
 export type MockReceptionistApplication = ReceptionistApplication<
@@ -20,7 +21,6 @@ export type MockReceptionistApplication = ReceptionistApplication<
   never,
   never,
   never,
-  unknown,
   string
 >;
 
@@ -41,6 +41,7 @@ function createIdGenerator<Identifier>(
 export function createMockReceptionistApplication(): MockReceptionistApplication {
   const conversationStore = new InMemoryConversationStore();
   const responseGenerator = new MockResponseGenerator();
+  const generationContextBuilder = new DeterministicGenerationContextBuilder();
   const behaviorEngine = new DeterministicBehaviorEngine();
   const knowledgeRetriever = new UnsupportedKnowledgeRetriever();
   const memoryStore = new UnsupportedMemoryStore();
@@ -57,6 +58,7 @@ export function createMockReceptionistApplication(): MockReceptionistApplication
   );
   const evaluateAction = createEvaluateAction(
     behaviorEngine,
+    generationContextBuilder,
     responseGenerator,
   );
   const processConversationTurn = createProcessConversationTurn(

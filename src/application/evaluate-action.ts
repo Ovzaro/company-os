@@ -3,6 +3,7 @@ import type {
   BehaviorRequest,
 } from "../behavior/contracts/index.js";
 import type { Conversation } from "../conversation/index.js";
+import type { GenerationIntent } from "../response/contracts/index.js";
 
 type DecisionWithOutcome<Outcome extends BehaviorDecision["outcome"]> = Extract<
   BehaviorDecision,
@@ -23,8 +24,8 @@ export type EvaluateActionResult<GeneratedResponse> =
  * generated response; prohibited and escalation-required decisions end the
  * orchestration without generation or conversation mutation.
  */
-export type EvaluateAction<GenerationContext, GeneratedResponse> = (
+export type EvaluateAction<GeneratedResponse> = (
   conversation: Conversation,
   behaviorRequest: BehaviorRequest,
-  generationContext: GenerationContext,
+  generationIntent: GenerationIntent,
 ) => Promise<EvaluateActionResult<GeneratedResponse>>;
