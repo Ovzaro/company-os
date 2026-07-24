@@ -11,7 +11,7 @@ Conversation data, includes only retrieved attributable Knowledge Units, and
 explicitly records that Memory was not requested. This makes authorization,
 provenance, and data exposure auditable.
 
-`GenerationContext` is not a provider prompt. Future provider implementations
+`GenerationContext` is not a provider prompt. Provider implementations
 translate it at the outer boundary and must not retrieve missing information,
 reinterpret policy, read source files, or redefine the inward contract. Future
 Memory enrichment and context-window policies require typed contracts and

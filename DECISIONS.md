@@ -166,3 +166,23 @@ Consequences:
   documents.
 - Future ranking implementations may index the same units without allowing
   providers to access source files or weakening attribution.
+
+Decision #011
+
+Providers are translation boundaries.
+
+Reason:
+
+External capability vendors must remain replaceable without moving policy,
+retrieval, state, or business semantics out of repository-owned capabilities.
+
+Consequences:
+
+- Providers consume `GenerationContext` and return `GeneratedResponse` through
+  the `ResponseGenerator` port.
+- Providers translate repository-owned inputs into vendor requests and vendor
+  responses back into repository-owned results.
+- Provider-specific request, response, credential, model, and transport types
+  remain inside the provider package.
+- Providers never own Behavior policy, Knowledge retrieval, Conversation
+  state, Tool execution, application orchestration, or business rules.

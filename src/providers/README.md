@@ -14,9 +14,9 @@ conversation context, grounded evidence, relevant memory, and Behavior
 constraints into a proposed response result. It defines generation meaning
 independently of any external model provider.
 
-External model providers are future outward implementations. They may later
-implement generation-related ports, but they must not define this capability,
-its contracts, or its semantics.
+External model providers are outward implementations. They implement
+generation-related ports but do not define this capability, its contracts, or
+its semantics. The first implementation lives in `openai/`.
 
 ## Responsibilities
 
@@ -75,14 +75,12 @@ the capability does not import or invoke other capabilities directly. It
 remains independent of model vendors, transports, persistence, and composition.
 Behavior constraints are authoritative over generation.
 
-## Future ports suggested by the boundary
+## Port implemented at the boundary
 
-This boundary suggests a future inward port for generating a proposed response
-from approved inputs and possibly a separate capability-owned contract for
-assessing generation outcomes. Exact contracts are deferred. External model
-providers, local models, or deterministic generators may implement the
-generation port as outward adapters. Provider selection belongs at a future
-composition boundary, not inside the capability.
+`ResponseGenerator` is the inward port for generating a proposed response from
+approved inputs. External model providers, local models, or deterministic
+generators may implement it as outward adapters. Provider selection belongs at
+Composition, not inside the capability.
 
 ## Invariants
 

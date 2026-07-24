@@ -13,3 +13,4 @@ export type {
   PermittedBehaviorDecision,
 } from "./generation-context.js";
 export type { GenerationIntent } from "./generation-intent.js";
+export type { GeneratedResponse } from "./generated-response.js";

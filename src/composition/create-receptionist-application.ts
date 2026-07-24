@@ -6,7 +6,6 @@ import type { ConversationId, TurnId } from "../conversation/index.js";
 import {
   FilesystemKnowledgeRetriever,
   InMemoryConversationStore,
-  MockResponseGenerator,
 } from "../infrastructure/index.js";
 import {
   UnsupportedMemoryStore,
@@ -14,15 +13,17 @@ import {
 } from "../infrastructure/placeholders/unsupported-capabilities.js";
 import type { KnowledgeRequest, KnowledgeResult } from "../knowledge/index.js";
 import type { IdGenerator } from "../ports/id-generator.js";
+import { createOpenAIProvider } from "../providers/openai/index.js";
+import type { GeneratedResponse } from "../response/contracts/index.js";
 import { DeterministicGenerationContextBuilder } from "../response/implementations/index.js";
 import type { ReceptionistApplication } from "./receptionist-application.js";
 
-export type MockReceptionistApplication = ReceptionistApplication<
+export type OpenAIReceptionistApplication = ReceptionistApplication<
   never,
   never,
   KnowledgeRequest,
   KnowledgeResult,
-  string
+  GeneratedResponse
 >;
 
 function createIdGenerator<Identifier>(
@@ -39,9 +40,13 @@ function createIdGenerator<Identifier>(
   };
 }
 
-export function createMockReceptionistApplication(): MockReceptionistApplication {
+export function createReceptionistApplication(
+  environment: NodeJS.ProcessEnv = process.env,
+): OpenAIReceptionistApplication {
+  const apiKey = requiredEnvironmentVariable(environment, "OPENAI_API_KEY");
+  const model = requiredEnvironmentVariable(environment, "OPENAI_MODEL");
   const conversationStore = new InMemoryConversationStore();
-  const responseGenerator = new MockResponseGenerator();
+  const responseGenerator = createOpenAIProvider(apiKey, model);
   const generationContextBuilder = new DeterministicGenerationContextBuilder();
   const behaviorEngine = new DeterministicBehaviorEngine();
   const knowledgeRetriever = new FilesystemKnowledgeRetriever();
@@ -76,4 +81,15 @@ export function createMockReceptionistApplication(): MockReceptionistApplication
     evaluateAction,
     processConversationTurn,
   };
+}
+
+function requiredEnvironmentVariable(
+  environment: NodeJS.ProcessEnv,
+  name: string,
+): string {
+  const value = environment[name]?.trim();
+  if (value === undefined || value.length === 0) {
+    throw new Error(`${name} is required.`);
+  }
+  return value;
 }

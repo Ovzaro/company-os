@@ -60,9 +60,10 @@ use-case contracts into one explicit surface. It does not implement, wrap,
 sequence, or reinterpret them.
 
 The composition root constructs use-case implementations with their required
-ports. `createMockReceptionistApplication` connects the deterministic Behavior
-engine, deterministic Generation Context Builder, and mock Response Generator
-to `createEvaluateAction`; the Application implementation, not Composition,
+ports. `createReceptionistApplication` connects the deterministic Behavior
+engine, deterministic Generation Context Builder, filesystem Knowledge
+retriever, and OpenAI `ResponseGenerator` implementation to
+`createEvaluateAction`; the Application implementation, not Composition,
 remains responsible for their sequencing and context assembly.
 That same `EvaluateAction`, the in-memory `ConversationStore`, and a shared turn
 identifier generator are passed to `createProcessConversationTurn`.
@@ -88,8 +89,9 @@ Composition will select instances and pass them explicitly to Application
 factories or constructors. Infrastructure must translate vendors, storage
 technologies, and operational failures at the port boundary.
 
-There are no infrastructure implementations in this sprint, and the dependency
-contract must not be mistaken for one.
+The OpenAI provider is an outward adapter selected here against the inward
+`ResponseGenerator` port. Its vendor types and translation remain within
+`src/providers/openai/`.
 
 ## Relationship to API and Channels
 
@@ -116,15 +118,11 @@ discover dependencies at runtime.
 
 ## Vendor Selection
 
-Provider and technology selection belongs at the future composition root
-because it is an outer-layer runtime choice. It belongs there only after
-implementations exist and can be selected against inward ports. A vendor name,
-SDK client, environment variable, or configuration schema is not an
-architecture and must not enter these contracts.
-
-This sprint cannot honestly select providers: no concrete implementations
-exist. Pretending to wire them would hide missing work and weaken the port
-boundaries.
+Provider and technology selection belongs at the composition root because it is
+an outer-layer runtime choice. The current runtime selects OpenAI as the first
+implementation of `ResponseGenerator` and requires both `OPENAI_API_KEY` and
+`OPENAI_MODEL` at startup. It provides no model default or fallback. Neither
+vendor detail enters Application or capability contracts.
 
 ## Future Assembly Flow
 

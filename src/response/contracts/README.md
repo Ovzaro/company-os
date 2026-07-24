@@ -1,9 +1,10 @@
 # Response Generation Contracts
 
-Response Generation owns `GenerationIntent`, `ApprovedContext`, and
-`GenerationContext` because these types define the information from which
-language may be proposed. They remain independent of providers, prompts,
-transports, and infrastructure.
+Response Generation owns `GenerationIntent`, `ApprovedContext`,
+`GenerationContext`, and `GeneratedResponse` because these types define the
+information from which language may be proposed and the provider-neutral
+proposal returned. They remain independent of providers, prompts, transports,
+and infrastructure.
 
 `GenerationIntent` is a closed description of the immediate response objective.
 `ApprovedContext` deliberately projects Conversation data, records the

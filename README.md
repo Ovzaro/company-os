@@ -59,6 +59,12 @@ npm run typecheck
 
 Use `npm run format` to apply repository formatting.
 
+The production composition requires both `OPENAI_API_KEY` and `OPENAI_MODEL`;
+there is no default model. With the sibling `ovzaro-knowledge` repository
+available, run `npm run smoke:openai` to exercise Behavior, Knowledge retrieval,
+Generation Context assembly, and real response generation through the OpenAI
+Responses API end to end.
+
 ## Future roadmap
 
 The project will evolve in deliberate layers:
