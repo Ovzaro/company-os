@@ -28,4 +28,5 @@ export type EvaluateAction<GeneratedResponse> = (
   conversation: Conversation,
   behaviorRequest: BehaviorRequest,
   generationIntent: GenerationIntent,
+  knowledgeQuery?: string,
 ) => Promise<EvaluateActionResult<GeneratedResponse>>;

@@ -46,7 +46,11 @@ export class DeterministicGenerationContextBuilder implements GenerationContextB
           reason: input.behaviorDecision.reason,
           mandatoryConstraints: input.behaviorDecision.mandatoryConstraints,
         },
-        knowledge: { state: "not_requested" },
+        knowledge: {
+          state: "retrieved",
+          query: input.knowledge.query,
+          documents: input.knowledge.documents,
+        },
         memory: { state: "not_requested" },
       },
     });
@@ -147,6 +151,16 @@ function assertValidInput(
     !isGenerationIntent(input.intent.type)
   ) {
     throw new TypeError("A supported Generation intent is required.");
+  }
+
+  if (
+    !("knowledge" in input) ||
+    !isObject(input.knowledge) ||
+    !hasString(input.knowledge, "query") ||
+    !("documents" in input.knowledge) ||
+    !Array.isArray(input.knowledge.documents)
+  ) {
+    throw new TypeError("A Knowledge retrieval result is required.");
   }
 }
 

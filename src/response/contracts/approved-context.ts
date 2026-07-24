@@ -13,6 +13,7 @@ import type {
   ParticipantKind,
   Timestamp,
 } from "../../conversation/index.js";
+import type { RetrievedKnowledgeDocument } from "../../knowledge/index.js";
 
 export interface ApprovedParticipant {
   readonly id: ParticipantId;
@@ -44,9 +45,13 @@ export interface ApprovedBehaviorContext {
   readonly mandatoryConstraints: readonly BehaviorConstraint[];
 }
 
-export interface KnowledgeContribution {
-  readonly state: "not_requested";
-}
+export type KnowledgeContribution =
+  | { readonly state: "not_requested" }
+  | {
+      readonly state: "retrieved";
+      readonly query: string;
+      readonly documents: readonly RetrievedKnowledgeDocument[];
+    };
 
 export interface MemoryContribution {
   readonly state: "not_requested";

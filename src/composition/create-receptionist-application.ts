@@ -4,14 +4,15 @@ import { createProcessConversationTurn } from "../application/implementations/cr
 import { DeterministicBehaviorEngine } from "../behavior/implementations/index.js";
 import type { ConversationId, TurnId } from "../conversation/index.js";
 import {
+  FilesystemKnowledgeRetriever,
   InMemoryConversationStore,
   MockResponseGenerator,
 } from "../infrastructure/index.js";
 import {
-  UnsupportedKnowledgeRetriever,
   UnsupportedMemoryStore,
   UnsupportedToolExecutor,
 } from "../infrastructure/placeholders/unsupported-capabilities.js";
+import type { KnowledgeRequest, KnowledgeResult } from "../knowledge/index.js";
 import type { IdGenerator } from "../ports/id-generator.js";
 import { DeterministicGenerationContextBuilder } from "../response/implementations/index.js";
 import type { ReceptionistApplication } from "./receptionist-application.js";
@@ -19,8 +20,8 @@ import type { ReceptionistApplication } from "./receptionist-application.js";
 export type MockReceptionistApplication = ReceptionistApplication<
   never,
   never,
-  never,
-  never,
+  KnowledgeRequest,
+  KnowledgeResult,
   string
 >;
 
@@ -43,7 +44,7 @@ export function createMockReceptionistApplication(): MockReceptionistApplication
   const responseGenerator = new MockResponseGenerator();
   const generationContextBuilder = new DeterministicGenerationContextBuilder();
   const behaviorEngine = new DeterministicBehaviorEngine();
-  const knowledgeRetriever = new UnsupportedKnowledgeRetriever();
+  const knowledgeRetriever = new FilesystemKnowledgeRetriever();
   const memoryStore = new UnsupportedMemoryStore();
   const toolExecutor = new UnsupportedToolExecutor();
   const turnIdGenerator = createIdGenerator<TurnId>("turn");
@@ -58,6 +59,7 @@ export function createMockReceptionistApplication(): MockReceptionistApplication
   );
   const evaluateAction = createEvaluateAction(
     behaviorEngine,
+    knowledgeRetriever,
     generationContextBuilder,
     responseGenerator,
   );

@@ -1,5 +1,6 @@
 import type { BehaviorDecision } from "../../behavior/contracts/index.js";
 import type { Conversation } from "../../conversation/index.js";
+import type { KnowledgeResult } from "../../knowledge/index.js";
 import type { ApprovedContext } from "./approved-context.js";
 import type { GenerationIntent } from "./generation-intent.js";
 
@@ -22,4 +23,5 @@ export interface GenerationContextBuilderInput {
   readonly conversation: Conversation;
   readonly behaviorDecision: PermittedBehaviorDecision;
   readonly intent: GenerationIntent;
+  readonly knowledge: KnowledgeResult;
 }

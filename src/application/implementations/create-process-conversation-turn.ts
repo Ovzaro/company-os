@@ -27,6 +27,7 @@ export function createProcessConversationTurn<GeneratedResponse>(
       conversation,
       behaviorRequest,
       generationIntent,
+      incomingMessages.map((message) => message.content).join(" "),
     );
 
     if (evaluation.outcome === "prohibited") {
