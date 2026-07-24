@@ -38,6 +38,40 @@ trustworthiness, ranking, and source-grounded information. A source or retrieval
 adapter may supply data, but it does not define what qualifies as evidence or
 how evidence quality is communicated.
 
+## Documents and Knowledge Units
+
+A Markdown document is the governed, reviewable source of truth in the
+knowledge repository. A `KnowledgeUnit` is the bounded retrieval boundary
+derived from that document. Retrieval operates on units so Generation Context
+receives only the directly relevant section instead of unrelated sections from
+the same file.
+
+Every unit inherits the source document title, tags, typed frontmatter metadata,
+and explicit repository attribution. Its `headingPath` records the active
+H1-through-H6 hierarchy, so a section remains understandable and attributable
+after retrieval.
+
+The pure Markdown parser applies these deterministic rules:
+
+- text before the first heading becomes a `Document Prelude` unit with an empty
+  heading path;
+- a document with no headings uses that same prelude rule;
+- each heading unit contains only its direct body up to the next heading;
+- descendant content is not copied into a parent unit;
+- empty sections are omitted because later non-empty units retain the meaningful
+  ancestor headings in their heading paths;
+- skipped heading levels still extend the nearest active ancestor path; and
+- repeated headings remain separate and retain source order.
+
+Unit IDs have the form
+`<source-path>#unit-<zero-padded-heading-ordinal>-<heading-slug>`. The prelude
+uses ordinal zero. Heading ordinals count all headings, including omitted empty
+sections, making repeated names unique and preserving deterministic document
+order without random or provider-specific identity.
+
+The parser accepts already parsed document identity, metadata, and body. It
+performs no I/O, retrieval scoring, provider work, or input mutation.
+
 ## Explicit exclusions
 
 Knowledge does not own:
@@ -70,6 +104,9 @@ semantics.
 ## Invariants
 
 - Every evidence item identifies its source and preserves provenance.
+- Every retrieved unit preserves its source document and heading path.
+- Source document boundaries do not define retrieval boundaries.
+- Parent units do not duplicate content owned by descendant units.
 - Ranking and trust signals remain distinguishable; relevance alone does not
   make a source authoritative.
 - Scope and access constraints are honored during retrieval.

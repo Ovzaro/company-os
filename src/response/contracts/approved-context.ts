@@ -13,7 +13,7 @@ import type {
   ParticipantKind,
   Timestamp,
 } from "../../conversation/index.js";
-import type { RetrievedKnowledgeDocument } from "../../knowledge/index.js";
+import type { RetrievedKnowledgeUnit } from "../../knowledge/index.js";
 
 export interface ApprovedParticipant {
   readonly id: ParticipantId;
@@ -50,7 +50,7 @@ export type KnowledgeContribution =
   | {
       readonly state: "retrieved";
       readonly query: string;
-      readonly documents: readonly RetrievedKnowledgeDocument[];
+      readonly units: readonly RetrievedKnowledgeUnit[];
     };
 
 export interface MemoryContribution {

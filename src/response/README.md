@@ -7,12 +7,12 @@ because providers must consume Ovzaro's vocabulary rather than define it.
 Application controls when context is built: Behavior must first permit the
 action, and non-permitted outcomes stop before assembly or generation. The
 builder records Behavior constraints unchanged, projects only bounded
-Conversation data, and explicitly records that Knowledge and Memory were not
-requested. This makes authorization, provenance gaps, and data exposure
-auditable.
+Conversation data, includes only retrieved attributable Knowledge Units, and
+explicitly records that Memory was not requested. This makes authorization,
+provenance, and data exposure auditable.
 
 `GenerationContext` is not a provider prompt. Future provider implementations
 translate it at the outer boundary and must not retrieve missing information,
-reinterpret policy, or redefine the inward contract. Future Knowledge and
-Memory enrichment, relevance selection, and context-window policies require
-typed contracts and explicit Application orchestration.
+reinterpret policy, read source files, or redefine the inward contract. Future
+Memory enrichment and context-window policies require typed contracts and
+explicit Application orchestration.

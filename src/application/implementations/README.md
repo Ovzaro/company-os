@@ -40,7 +40,7 @@ use-case responsibility:
 2. Prohibited and escalation-required decisions are returned as typed outcomes;
    they do not invoke Response Generation or mutate Conversation.
 3. Only a permitted decision triggers deterministic Knowledge retrieval.
-4. Retrieved documents are passed to the Response-owned deterministic context
+4. Retrieved Knowledge Units are passed to the Response-owned deterministic context
    builder together with Conversation and the caller's typed intent.
 5. Response Generation receives the resulting approved context and produces
    language.

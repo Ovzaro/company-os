@@ -12,6 +12,6 @@ budget or relevance algorithm.
 
 Application decides when to invoke the builder and supplies a type-narrowed
 permitted Behavior decision. The builder copies its rule, reason, identities,
-and mandatory constraints without reinterpretation. Knowledge and Memory are
-currently marked `not_requested`; future Application orchestration may supply
-capability-owned contributions after retrieval and recall are implemented.
+and mandatory constraints without reinterpretation. Retrieved Knowledge Units
+are copied into approved context without file parsing or expansion. Memory
+remains `not_requested`.

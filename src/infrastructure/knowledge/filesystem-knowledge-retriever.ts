@@ -2,23 +2,26 @@ import { readdir, readFile } from "node:fs/promises";
 import { basename, relative, resolve, sep } from "node:path";
 
 import type {
-  KnowledgeDocument,
   KnowledgeMetadataValue,
   KnowledgeRequest,
   KnowledgeResult,
-  RetrievedKnowledgeDocument,
+  KnowledgeSourceDocument,
+  KnowledgeUnit,
+  RetrievedKnowledgeUnit,
 } from "../../knowledge/index.js";
+import { parseMarkdownKnowledgeUnits } from "../../knowledge/index.js";
 import type { KnowledgeRetriever } from "../../ports/knowledge-retriever.js";
 
 const DEFAULT_LIMIT = 5;
 const MAX_LIMIT = 50;
 const REPOSITORY = "ovzaro-knowledge";
 
-interface IndexedDocument {
-  readonly document: KnowledgeDocument;
+interface IndexedUnit {
+  readonly unit: KnowledgeUnit;
+  readonly heading: string;
+  readonly headingPath: readonly string[];
   readonly title: string;
   readonly filename: string;
-  readonly headings: readonly string[];
   readonly tags: readonly string[];
   readonly metadata: readonly string[];
   readonly content: string;
@@ -28,7 +31,7 @@ export class FilesystemKnowledgeRetriever implements KnowledgeRetriever<
   KnowledgeRequest,
   KnowledgeResult
 > {
-  private indexPromise: Promise<readonly IndexedDocument[]> | undefined;
+  private indexPromise: Promise<readonly IndexedUnit[]> | undefined;
 
   constructor(
     private readonly repositoryPath = resolve(process.cwd(), "..", REPOSITORY),
@@ -37,37 +40,45 @@ export class FilesystemKnowledgeRetriever implements KnowledgeRetriever<
   async retrieve(request: KnowledgeRequest): Promise<KnowledgeResult> {
     assertRequest(request);
     const query = request.query.trim();
-    if (query.length === 0) return { query, documents: [] };
+    if (query.length === 0) return { query, units: [] };
 
     const terms = tokenize(query);
-    const documents = (await this.getIndex())
-      .map((entry) => scoreDocument(entry, terms))
-      .filter((document) => document.score > 0)
+    const units = (await this.getIndex())
+      .map((entry) => scoreUnit(entry, terms))
+      .filter((unit) => unit.score > 0)
       .sort(
         (left, right) =>
-          right.score - left.score || left.path.localeCompare(right.path),
+          right.score - left.score ||
+          left.sourceDocumentPath.localeCompare(right.sourceDocumentPath) ||
+          left.order - right.order,
       )
       .slice(0, request.limit ?? DEFAULT_LIMIT);
 
-    return { query, documents };
+    return { query, units };
   }
 
-  private getIndex(): Promise<readonly IndexedDocument[]> {
+  private getIndex(): Promise<readonly IndexedUnit[]> {
     this.indexPromise ??= this.buildIndex();
     return this.indexPromise;
   }
 
-  private async buildIndex(): Promise<readonly IndexedDocument[]> {
+  private async buildIndex(): Promise<readonly IndexedUnit[]> {
     const documents = await Promise.all(
       (await markdownPaths(this.repositoryPath)).map(async (path) =>
         parseDocument(this.repositoryPath, path, await readFile(path, "utf8")),
       ),
     );
     return documents
-      .filter((document): document is KnowledgeDocument => document !== null)
-      .map(indexDocument)
-      .sort((left, right) =>
-        left.document.path.localeCompare(right.document.path),
+      .filter(
+        (document): document is KnowledgeSourceDocument => document !== null,
+      )
+      .flatMap(parseMarkdownKnowledgeUnits)
+      .map(indexUnit)
+      .sort(
+        (left, right) =>
+          left.unit.sourceDocumentPath.localeCompare(
+            right.unit.sourceDocumentPath,
+          ) || left.unit.order - right.unit.order,
       );
   }
 }
@@ -90,27 +101,26 @@ function parseDocument(
   repositoryPath: string,
   absolutePath: string,
   markdown: string,
-): KnowledgeDocument | null {
+): KnowledgeSourceDocument | null {
   const parsed = parseFrontmatter(markdown);
   if (metadataText(parsed.metadata.status).toLowerCase() !== "approved") {
     return null;
   }
 
   const path = relative(repositoryPath, absolutePath).split(sep).join("/");
-  const headings = [...parsed.body.matchAll(/^#{1,6}\s+(.+)$/gmu)].map(
-    (match) => match[1]?.trim() ?? "",
-  );
+  const firstHeading = /^#{1,6}[ \t]+(.+?)[ \t]*#*[ \t]*$/mu.exec(
+    parsed.body,
+  )?.[1];
   const title = firstNonEmpty(
     metadataText(parsed.metadata.title),
-    headings[0],
+    firstHeading?.trim(),
     basename(path, ".md"),
   );
 
   return {
     path,
     title,
-    content: parsed.body.trim(),
-    headings,
+    body: parsed.body,
     tags: metadataList(parsed.metadata.tags),
     metadata: parsed.metadata,
     source: {
@@ -156,37 +166,39 @@ function parseFrontmatter(markdown: string): {
   return { metadata, body: lines.slice(closingIndex + 1).join("\n") };
 }
 
-function indexDocument(document: KnowledgeDocument): IndexedDocument {
+function indexUnit(unit: KnowledgeUnit): IndexedUnit {
   return {
-    document,
-    title: normalize(document.title),
-    filename: normalize(basename(document.path, ".md")),
-    headings: document.headings.map(normalize),
-    tags: document.tags.map(normalize),
-    metadata: Object.entries(document.metadata).flatMap(([key, value]) => [
+    unit,
+    heading: normalize(unit.heading),
+    headingPath: unit.headingPath.map(normalize),
+    title: normalize(unit.sourceDocumentTitle),
+    filename: normalize(basename(unit.sourceDocumentPath, ".md")),
+    tags: unit.tags.map(normalize),
+    metadata: Object.entries(unit.metadata).flatMap(([key, value]) => [
       normalize(key),
       ...(typeof value === "string"
         ? [normalize(value)]
         : value.map(normalize)),
     ]),
-    content: normalize(document.content),
+    content: normalize(unit.content),
   };
 }
 
-function scoreDocument(
-  entry: IndexedDocument,
+function scoreUnit(
+  entry: IndexedUnit,
   terms: readonly string[],
-): RetrievedKnowledgeDocument {
+): RetrievedKnowledgeUnit {
   let score = 0;
   for (const term of terms) {
-    score += occurrences(entry.title, term) * 100;
-    score += occurrences(entry.filename, term) * 80;
-    score += fieldOccurrences(entry.headings, term) * 60;
-    score += fieldOccurrences(entry.tags, term) * 50;
-    score += fieldOccurrences(entry.metadata, term) * 20;
-    score += Math.min(occurrences(entry.content, term), 10) * 10;
+    score += hasTerm(entry.heading, term) ? 120 : 0;
+    score += Math.min(fieldOccurrences(entry.headingPath, term), 2) * 80;
+    score += hasTerm(entry.title, term) ? 60 : 0;
+    score += hasTerm(entry.filename, term) ? 50 : 0;
+    score += Math.min(fieldOccurrences(entry.tags, term), 2) * 40;
+    score += Math.min(fieldOccurrences(entry.metadata, term), 2) * 15;
+    score += Math.min(occurrences(entry.content, term), 3) * 10;
   }
-  return { ...entry.document, score };
+  return { ...entry.unit, score };
 }
 
 function fieldOccurrences(fields: readonly string[], term: string): number {
@@ -213,6 +225,10 @@ function normalize(value: string): string {
 
 function occurrences(value: string, term: string): number {
   return value.split(" ").filter((candidate) => candidate === term).length;
+}
+
+function hasTerm(value: string, term: string): boolean {
+  return occurrences(value, term) > 0;
 }
 
 function metadataText(value: KnowledgeMetadataValue | undefined): string {

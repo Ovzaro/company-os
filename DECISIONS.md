@@ -139,3 +139,30 @@ Consequences:
   aggregate or unlimited history.
 - Providers translate `GenerationContext` at the outer boundary and cannot
   redefine it.
+
+Decision #010
+
+Knowledge retrieval operates on attributable Knowledge Units rather than source
+document boundaries.
+
+Reason:
+
+Source documents are governance and authorship boundaries, but they may contain
+many independently relevant sections. Bounded heading-based units provide
+focused retrieval while preserving the document identity and structural context
+needed to verify every result.
+
+Consequences:
+
+- Knowledge owns unit identity, heading parsing semantics, ranking vocabulary,
+  and provenance.
+- Each non-empty Markdown heading section is independently retrievable and
+  contains only its direct body content.
+- Prelude content, nested heading paths, repeated headings, and source order
+  follow documented deterministic rules.
+- Infrastructure reads approved files and builds the index but does not redefine
+  unit semantics.
+- Generation Context receives retrieved units rather than complete source
+  documents.
+- Future ranking implementations may index the same units without allowing
+  providers to access source files or weakening attribution.

@@ -7,9 +7,10 @@ transports, and infrastructure.
 
 `GenerationIntent` is a closed description of the immediate response objective.
 `ApprovedContext` deliberately projects Conversation data, records the
-permitted Behavior decision, and makes the current absence of Knowledge and
-Memory contributions explicit. A generator must not treat that absence as
-permission to retrieve or invent context.
+permitted Behavior decision, carries retrieved Knowledge Units with their
+source and heading-path provenance, and makes the current absence of Memory
+explicit. A generator must not treat absent contributions as permission to
+retrieve or invent context.
 
 `GenerationContext` is not a prompt. A future provider adapter must translate
 it at the outer boundary. Behavior constraints are carried unchanged so the

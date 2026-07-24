@@ -49,7 +49,7 @@ export class DeterministicGenerationContextBuilder implements GenerationContextB
         knowledge: {
           state: "retrieved",
           query: input.knowledge.query,
-          documents: input.knowledge.documents,
+          units: input.knowledge.units,
         },
         memory: { state: "not_requested" },
       },
@@ -157,8 +157,8 @@ function assertValidInput(
     !("knowledge" in input) ||
     !isObject(input.knowledge) ||
     !hasString(input.knowledge, "query") ||
-    !("documents" in input.knowledge) ||
-    !Array.isArray(input.knowledge.documents)
+    !("units" in input.knowledge) ||
+    !Array.isArray(input.knowledge.units)
   ) {
     throw new TypeError("A Knowledge retrieval result is required.");
   }
