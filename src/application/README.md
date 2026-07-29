@@ -117,12 +117,12 @@ identities, and mandatory constraints to the generator. Composition wires the
 builder but never assembles context fields.
 
 Response Generation produces language but never mutates Conversation. The
-current response result is deliberately returned separately because the mock
-generator supplies text, not the identity, author, and timestamp required for a
-Conversation-owned `Message`. Application appends the domain-valid incoming
-messages as a new `Turn` only after generation succeeds. It then persists the
-complete updated aggregate through `ConversationStore`, so a generation failure
-cannot leave a partially completed turn in storage.
+current incoming messages participate in the candidate Conversation used for
+generation and are persisted only after generation succeeds. The receptionist
+experience boundary then supplies the generated response's
+conversation-local author, message identity, and timestamp and records it
+through `ContinueConversation`. Both sides are therefore available to bounded
+history without giving Conversation responsibilities to the provider.
 
 The orchestration leaves explicit future insertion points without implementing
 their capabilities:

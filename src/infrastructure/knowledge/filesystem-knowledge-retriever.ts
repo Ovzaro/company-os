@@ -5,6 +5,7 @@ import type {
   KnowledgeMetadataValue,
   KnowledgeRequest,
   KnowledgeResult,
+  ReceptionistGuidanceProfile,
   KnowledgeSourceDocument,
   KnowledgeUnit,
   RetrievedKnowledgeUnit,
@@ -15,6 +16,56 @@ import type { KnowledgeRetriever } from "../../ports/knowledge-retriever.js";
 const DEFAULT_LIMIT = 5;
 const MAX_LIMIT = 50;
 const REPOSITORY = "ovzaro-knowledge";
+
+interface GuidanceSelector {
+  readonly path: string;
+  readonly heading: string;
+}
+
+const GUIDANCE_UNITS: Readonly<
+  Record<ReceptionistGuidanceProfile, readonly GuidanceSelector[]>
+> = {
+  answer: [
+    { path: "employees/receptionist/role.md", heading: "Purpose" },
+    {
+      path: "employees/receptionist/conversation-rules.md",
+      heading: "Rule 4 — Use Only Approved Knowledge",
+    },
+    {
+      path: "employees/receptionist/personality.md",
+      heading: "Communication Style",
+    },
+  ],
+  clarify: [
+    { path: "employees/receptionist/role.md", heading: "Purpose" },
+    {
+      path: "employees/receptionist/conversation-rules.md",
+      heading: "Rule 1 — Listen Before Responding",
+    },
+    {
+      path: "employees/receptionist/conversation-rules.md",
+      heading: "Rule 2 — One Step at a Time",
+    },
+  ],
+  acknowledge: [
+    { path: "employees/receptionist/role.md", heading: "Purpose" },
+    {
+      path: "employees/receptionist/personality.md",
+      heading: "Communication Style",
+    },
+  ],
+  handoff: [
+    { path: "employees/receptionist/role.md", heading: "Purpose" },
+    {
+      path: "employees/receptionist/escalation.md",
+      heading: "During Escalation",
+    },
+    {
+      path: "employees/receptionist/escalation.md",
+      heading: "Future Escalation Workflow",
+    },
+  ],
+};
 
 interface IndexedUnit {
   readonly unit: KnowledgeUnit;
@@ -43,7 +94,8 @@ export class FilesystemKnowledgeRetriever implements KnowledgeRetriever<
     if (query.length === 0) return { query, units: [] };
 
     const terms = tokenize(query);
-    const units = (await this.getIndex())
+    const index = await this.getIndex();
+    const factualUnits = index
       .map((entry) => scoreUnit(entry, terms))
       .filter((unit) => unit.score > 0)
       .sort(
@@ -53,6 +105,11 @@ export class FilesystemKnowledgeRetriever implements KnowledgeRetriever<
           left.order - right.order,
       )
       .slice(0, request.limit ?? DEFAULT_LIMIT);
+    const guidanceUnits =
+      request.guidanceProfile === undefined
+        ? []
+        : selectGuidance(index, request.guidanceProfile);
+    const units = mergeUnique(factualUnits, guidanceUnits);
 
     return { query, units };
   }
@@ -81,6 +138,35 @@ export class FilesystemKnowledgeRetriever implements KnowledgeRetriever<
           ) || left.unit.order - right.unit.order,
       );
   }
+}
+
+function selectGuidance(
+  index: readonly IndexedUnit[],
+  profile: ReceptionistGuidanceProfile,
+): readonly RetrievedKnowledgeUnit[] {
+  return GUIDANCE_UNITS[profile].flatMap((selector) => {
+    const match = index.find(
+      (entry) =>
+        entry.unit.sourceDocumentPath === selector.path &&
+        entry.unit.heading === selector.heading,
+    );
+    return match === undefined ? [] : [{ ...match.unit, score: 0 }];
+  });
+}
+
+function mergeUnique(
+  factual: readonly RetrievedKnowledgeUnit[],
+  guidance: readonly RetrievedKnowledgeUnit[],
+): readonly RetrievedKnowledgeUnit[] {
+  const seen = new Set(factual.map((unit) => unit.id));
+  return [
+    ...factual,
+    ...guidance.filter((unit) => {
+      if (seen.has(unit.id)) return false;
+      seen.add(unit.id);
+      return true;
+    }),
+  ];
 }
 
 async function markdownPaths(directory: string): Promise<readonly string[]> {

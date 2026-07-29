@@ -31,7 +31,11 @@ export interface KnowledgeUnit {
 export interface KnowledgeRequest {
   readonly query: string;
   readonly limit?: number;
+  readonly guidanceProfile?: ReceptionistGuidanceProfile;
 }
+
+export type ReceptionistGuidanceProfile =
+  "answer" | "clarify" | "acknowledge" | "handoff";
 
 export interface RetrievedKnowledgeUnit extends KnowledgeUnit {
   readonly score: number;

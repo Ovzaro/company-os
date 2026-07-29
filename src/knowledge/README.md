@@ -161,3 +161,13 @@ decide organizational truth, erase provenance, or expose vendor types inward.
 - A prompt that asks a model to answer from documents.
 - A Pinecone, Elasticsearch, web-search, or model-provider integration.
 - The final response wording or channel delivery.
+
+## Receptionist operating guidance
+
+Factual retrieval keeps its query score, ordering, and result limit. When
+Application supplies a Knowledge-owned guidance profile, the filesystem
+retriever appends only the small approved set of receptionist operating units
+mapped to that response objective. Appended units use score `0`, are
+deduplicated by unit identity, and preserve full provenance. This keeps company
+facts query-relevant without making provider prompts or every receptionist
+document an implicit source.

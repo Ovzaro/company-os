@@ -14,7 +14,10 @@ import {
 import type { KnowledgeRequest, KnowledgeResult } from "../knowledge/index.js";
 import type { IdGenerator } from "../ports/id-generator.js";
 import { createOpenAIProvider } from "../providers/openai/index.js";
-import type { GeneratedResponse } from "../response/contracts/index.js";
+import type {
+  GeneratedResponse,
+  GenerationContext,
+} from "../response/contracts/index.js";
 import { DeterministicGenerationContextBuilder } from "../response/implementations/index.js";
 import type { ReceptionistApplication } from "./receptionist-application.js";
 
@@ -25,6 +28,10 @@ export type OpenAIReceptionistApplication = ReceptionistApplication<
   KnowledgeResult,
   GeneratedResponse
 >;
+
+export interface ReceptionistApplicationOptions {
+  readonly onGenerationContext?: (context: GenerationContext) => void;
+}
 
 function createIdGenerator<Identifier>(
   prefix: string,
@@ -42,12 +49,22 @@ function createIdGenerator<Identifier>(
 
 export function createReceptionistApplication(
   environment: NodeJS.ProcessEnv = process.env,
+  options: ReceptionistApplicationOptions = {},
 ): OpenAIReceptionistApplication {
   const apiKey = requiredEnvironmentVariable(environment, "OPENAI_API_KEY");
   const model = requiredEnvironmentVariable(environment, "OPENAI_MODEL");
   const conversationStore = new InMemoryConversationStore();
   const responseGenerator = createOpenAIProvider(apiKey, model);
-  const generationContextBuilder = new DeterministicGenerationContextBuilder();
+  const contextBuilder = new DeterministicGenerationContextBuilder();
+  const generationContextBuilder = {
+    build: async (
+      input: Parameters<typeof contextBuilder.build>[0],
+    ): Promise<GenerationContext> => {
+      const context = await contextBuilder.build(input);
+      options.onGenerationContext?.(context);
+      return context;
+    },
+  };
   const behaviorEngine = new DeterministicBehaviorEngine();
   const knowledgeRetriever = new FilesystemKnowledgeRetriever();
   const memoryStore = new UnsupportedMemoryStore();

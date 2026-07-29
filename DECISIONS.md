@@ -186,3 +186,24 @@ Consequences:
   remain inside the provider package.
 - Providers never own Behavior policy, Knowledge retrieval, Conversation
   state, Tool execution, application orchestration, or business rules.
+
+Decision #012
+
+Receptionist operating guidance uses bounded, intent-aware Knowledge retrieval.
+
+Reason:
+
+Broad visitor wording must not crowd out query-relevant company facts, while
+the generator still needs approved identity and conduct guidance for each
+response objective.
+
+Consequences:
+
+- Application maps `GenerationIntent` to a Knowledge-owned receptionist
+  guidance profile.
+- Deterministic factual ranking and its result limit remain unchanged.
+- Knowledge appends only a small, profile-specific set of approved
+  receptionist Knowledge Units, deduplicated by unit identity.
+- Every appended unit preserves the same source attribution as ranked units.
+- Providers do not select guidance, retrieve files, classify intent, or own
+  receptionist policy.

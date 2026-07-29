@@ -23,8 +23,22 @@ export function createProcessConversationTurn<GeneratedResponse>(
     behaviorRequest,
     generationIntent,
   ): Promise<ProcessConversationTurnResult<GeneratedResponse>> => {
+    assertConversationCanAcceptTurn(conversation, incomingMessages);
+
+    const candidateConversation: Conversation = {
+      ...conversation,
+      turns: [
+        ...conversation.turns,
+        {
+          id: await turnIdGenerator.generate(),
+          sequence: conversation.turns.length + 1,
+          messages: incomingMessages,
+        },
+      ],
+    };
+
     const evaluation = await evaluateAction(
-      conversation,
+      candidateConversation,
       behaviorRequest,
       generationIntent,
       incomingMessages.map((message) => message.content).join(" "),
@@ -44,28 +58,14 @@ export function createProcessConversationTurn<GeneratedResponse>(
       };
     }
 
-    assertConversationCanAcceptTurn(conversation, incomingMessages);
-
-    const updatedConversation: Conversation = {
-      ...conversation,
-      turns: [
-        ...conversation.turns,
-        {
-          id: await turnIdGenerator.generate(),
-          sequence: conversation.turns.length + 1,
-          messages: incomingMessages,
-        },
-      ],
-    };
-
-    await conversationStore.save(updatedConversation);
+    await conversationStore.save(candidateConversation);
 
     const { generatedResponse, ...behaviorDecision } = evaluation;
 
     return {
       outcome: "permitted",
       behaviorDecision,
-      conversation: updatedConversation,
+      conversation: candidateConversation,
       generatedResponse,
     };
   };

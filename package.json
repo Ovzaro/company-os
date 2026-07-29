@@ -12,7 +12,11 @@
     "format:check": "prettier --check .",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "smoke:openai": "tsc --noEmit false --outDir /tmp/ovzaro-receptionist-smoke && node /tmp/ovzaro-receptionist-smoke/scripts/openai-smoke-test.js"
+    "build": "tsc --noEmit false --outDir dist",
+    "receptionist": "npm run build --silent && node --env-file-if-exists=.env dist/scripts/receptionist.js",
+    "server": "npm run build --silent && node --env-file-if-exists=.env dist/scripts/server.js",
+    "test": "npm run build --silent && node --test dist/tests/*.test.js",
+    "smoke:openai": "tsc --noEmit false --outDir /tmp/ovzaro-receptionist-smoke && node --env-file-if-exists=.env /tmp/ovzaro-receptionist-smoke/scripts/openai-smoke-test.js"
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",

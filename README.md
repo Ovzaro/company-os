@@ -59,11 +59,74 @@ npm run typecheck
 
 Use `npm run format` to apply repository formatting.
 
+## Local terminal receptionist
+
 The production composition requires both `OPENAI_API_KEY` and `OPENAI_MODEL`;
-there is no default model. With the sibling `ovzaro-knowledge` repository
-available, run `npm run smoke:openai` to exercise Behavior, Knowledge retrieval,
-Generation Context assembly, and real response generation through the OpenAI
-Responses API end to end.
+there is no default model. Create a local environment file and start one
+interactive, in-memory conversation:
+
+```bash
+cp .env.example .env
+# Add local credentials without committing the file.
+npm run receptionist
+```
+
+Node loads `.env` directly when it exists. The file is ignored by Git, and the
+runtime never prints the API key. Type `exit` or `quit`, or press Ctrl+C, to end
+the conversation.
+
+The terminal script is only a local channel. Every message still follows
+Behavior → Knowledge Retrieval → Generation Context → ResponseGenerator →
+OpenAI Responses API. It does not call OpenAI directly. Conversation state,
+including visitor and receptionist messages, lasts only for the process.
+
+Run deterministic acceptance checks without OpenAI credentials:
+
+```bash
+npm test
+```
+
+With credentials configured, `npm run smoke:openai` performs a real single-turn
+check through the same core capabilities. Connecting this runtime to
+ovzaro.com is the next milestone.
+
+## Local HTTP service
+
+With `OPENAI_API_KEY` and `OPENAI_MODEL` configured in `.env`, start the HTTP
+adapter on port 4000:
+
+```bash
+npm run server
+```
+
+Check its health:
+
+```bash
+curl http://localhost:4000/health
+```
+
+Send a message with a client-generated conversation ID:
+
+```bash
+curl -X POST http://localhost:4000/chat \
+  -H 'Content-Type: application/json' \
+  -d '{"conversationId":"local-demo","message":"What does Ovzaro do?"}'
+```
+
+Reuse the same `conversationId` in later requests to continue that
+conversation. The service stores conversation state in memory, so it is reset
+when the process restarts. Press Ctrl+C to stop the server gracefully.
+
+### Receptionist guidance retrieval
+
+Factual Knowledge Units remain ranked from the visitor’s current wording.
+Application also labels the immediate response objective with a small
+Knowledge-owned receptionist guidance profile. Retrieval appends only the
+approved role and conduct sections needed for that objective—for example,
+grounding rules for answers, one-question rules for clarification, or
+escalation language for handoffs. These units retain their source attribution
+and do not consume or reorder the factual result limit. The runtime does not
+retrieve every receptionist document for every message.
 
 ## Future roadmap
 

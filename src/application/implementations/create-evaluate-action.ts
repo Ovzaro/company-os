@@ -1,3 +1,5 @@
+import { buildKnowledgeQuery } from "./knowledge-query-planner.js";
+
 import type {
   BehaviorDecision,
   BehaviorRequest,
@@ -9,6 +11,7 @@ import type { ResponseGenerator } from "../../ports/response-generator.js";
 import type {
   KnowledgeRequest,
   KnowledgeResult,
+  ReceptionistGuidanceProfile,
 } from "../../knowledge/index.js";
 import type { GenerationContext } from "../../response/contracts/index.js";
 import type {
@@ -18,9 +21,15 @@ import type {
 
 export function createEvaluateAction<GeneratedResponse>(
   behaviorEngine: BehaviorEngine<BehaviorRequest, BehaviorDecision>,
-  knowledgeRetriever: KnowledgeRetriever<KnowledgeRequest, KnowledgeResult>,
+  knowledgeRetriever: KnowledgeRetriever<
+    KnowledgeRequest,
+    KnowledgeResult
+  >,
   generationContextBuilder: GenerationContextBuilder,
-  responseGenerator: ResponseGenerator<GenerationContext, GeneratedResponse>,
+  responseGenerator: ResponseGenerator<
+    GenerationContext,
+    GeneratedResponse
+  >,
 ): EvaluateAction<GeneratedResponse> {
   return async (
     conversation,
@@ -28,24 +37,37 @@ export function createEvaluateAction<GeneratedResponse>(
     generationIntent,
     knowledgeQuery,
   ): Promise<EvaluateActionResult<GeneratedResponse>> => {
-    const behaviorDecision = await behaviorEngine.evaluate(behaviorRequest);
+    const behaviorDecision =
+      await behaviorEngine.evaluate(behaviorRequest);
 
     if (behaviorDecision.outcome !== "permitted") {
       return behaviorDecision;
     }
 
-    const query = knowledgeQuery ?? conversationQuery(conversation);
-    const knowledge = await knowledgeRetriever.retrieve({ query });
+    const query =
+      knowledgeQuery ?? buildKnowledgeQuery(conversation);
 
-    const generationContext = await generationContextBuilder.build({
-      conversation,
-      behaviorDecision,
-      intent: generationIntent,
-      knowledge,
-    });
+    const knowledge =
+      await knowledgeRetriever.retrieve({
+        query,
+        guidanceProfile:
+          generationIntentToGuidanceProfile(
+            generationIntent,
+          ),
+      });
+
+    const generationContext =
+      await generationContextBuilder.build({
+        conversation,
+        behaviorDecision,
+        intent: generationIntent,
+        knowledge,
+      });
 
     const generatedResponse =
-      await responseGenerator.generate(generationContext);
+      await responseGenerator.generate(
+        generationContext,
+      );
 
     return {
       ...behaviorDecision,
@@ -54,11 +76,21 @@ export function createEvaluateAction<GeneratedResponse>(
   };
 }
 
-function conversationQuery(
-  conversation: Parameters<EvaluateAction<unknown>>[0],
-): string {
-  return conversation.turns
-    .flatMap((turn) => turn.messages)
-    .map((message) => message.content)
-    .join(" ");
+function generationIntentToGuidanceProfile(
+  intent: GenerationContext["intent"],
+): ReceptionistGuidanceProfile {
+  switch (intent.type) {
+    case "answer":
+      return "answer";
+
+    case "ask_clarifying_question":
+      return "clarify";
+
+    case "acknowledge":
+      return "acknowledge";
+
+    case "escalate_handoff":
+      return "handoff";
+  }
 }
+

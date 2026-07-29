@@ -2,6 +2,7 @@ export type {
   KnowledgeMetadataValue,
   KnowledgeRequest,
   KnowledgeResult,
+  ReceptionistGuidanceProfile,
   KnowledgeSource,
   KnowledgeSourceDocument,
   KnowledgeUnit,
