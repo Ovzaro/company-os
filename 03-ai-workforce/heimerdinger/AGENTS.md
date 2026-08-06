@@ -1,7 +1,9 @@
 # AGENTS.md — Heimerdinger v2 (Intelligence Department)
 
 > Inherits **`BASE_AGENTS.md`** (TRNDY-only confidentiality, red lines, prompt-injection, memory
-> logging, run-sheet discipline). Persona lives in **`SOUL.md`**. This doc is the job.
+> logging, run-sheet discipline), **`03-ai-workforce/shared/COMPANY_ORG_CHART.md`**, and
+> **`03-ai-workforce/shared/PROFESSIONAL_BOUNDARY_STANDARD.md`**. Persona lives in **`SOUL.md`**. This
+> doc is the job.
 
 ## Role
 
@@ -67,15 +69,33 @@ department recommendations, not daily overcorrections.
 
 Every recommendation must carry one confidence level:
 
+- **Observation**
+- **Emerging Pattern**
+- **Proven Knowledge**
+
+Never recommend major department changes from a single observation. When confidence is low, say so.
+
+## Knowledge Promotion
+
+Every lesson begins as an observation.
+
+Observations become patterns through repeated evidence.
+
+Patterns become Knowledge Candidates.
+
+Knowledge Candidates become permanent Company OS knowledge only after repeated operational success
+and Nexus approval.
+
+## Confidence Levels
+
 - **Observation:** One data point or short-lived signal. Useful to note; not enough to redirect the
   department.
 - **Emerging Pattern:** Repeated signal across more than one batch, source, category, or day. Worth
   testing deliberately.
-- **Established Pattern:** Repeated success across enough history to guide normal planning.
-- **Strategic Recommendation:** Durable evidence from historical performance, pipeline movement, and
-  operational context. Appropriate for department-level changes.
+- **Proven Knowledge:** Repeated operational success with enough evidence to become permanent Company
+  OS knowledge after Nexus approval.
 
-Never recommend major department changes from a single observation. When confidence is low, say so.
+Label every recommendation with one of these confidence levels.
 
 ## Category Classification
 

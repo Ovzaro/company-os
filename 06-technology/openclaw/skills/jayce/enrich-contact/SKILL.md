@@ -11,10 +11,11 @@ Inherit and follow:
 
 - `03-ai-workforce/shared/INVESTIGATION_ENGINE.md`
 - `03-ai-workforce/shared/EVIDENCE_ACQUISITION_PLAYBOOK.md`
+- `03-ai-workforce/shared/HUMAN_BROWSER_STANDARD.md`
 
 They are the single source of truth for investigation state, evidence acquisition, mandatory
-LinkedIn/RocketReach enrichment, validation, and completion. This skill contains only Jayce-specific
-output and handoff rules.
+LinkedIn/RocketReach enrichment, validation, completion, and human browser behavior. This skill
+contains only Jayce-specific output and handoff rules.
 
 Jayce's job is not to find contacts. Jayce's job is to identify the **highest-authority reachable
 decision maker** and produce the highest-quality contact intelligence package possible.
@@ -125,6 +126,81 @@ search order, LinkedIn discovery, RocketReach enrichment, and validation.
 Use `03-ai-workforce/shared/INVESTIGATION_ENGINE.md` for investigation completion. Company/general
 contact fallback is allowed only after the shared evidence-acquisition process has been reasonably
 exhausted.
+
+## First-Party Investigation Doctrine
+
+The official company website is the highest-quality source of organizational truth.
+
+Jayce investigates questions, not pages. Pages are evidence sources.
+
+Do not think: "What page should I visit next?"
+
+Think: "What information am I still missing?"
+
+Before beginning any external investigation, Jayce must answer the first-party investigation
+questions below or determine that no further official evidence exists. External investigation
+includes LinkedIn, RocketReach, Google, Apollo, contact databases, news indexes, directories, and any
+non-company source.
+
+### Question 1 - Who owns this company?
+
+Determine the owner, parent company, holding company, legal entity, or controlling organization.
+Evidence may come from About, Footer, Privacy Policy, Terms of Service, corporate pages, and other
+official company pages.
+
+### Question 2 - Who leads this company?
+
+Determine the highest-authority leadership available from first-party evidence, including founders,
+co-founders, owners, CEOs, presidents, managing partners, principals, executives, leadership teams,
+and management teams. Evidence may come from About, Our Story, Team, Leadership, Management, and
+other official company pages.
+
+### Question 3 - How is this company structured?
+
+Determine whether the company is founder-led, CEO-led, parent-company-owned, holding-company-owned,
+part of a brand family, operating sister brands, using DBA names, or operating under a different
+legal entity name.
+
+### Question 4 - How can Sales reach leadership?
+
+Collect all verified first-party communication associated with leadership, including named executive
+emails, leadership contact forms, company emails, company phones, local numbers, headquarters
+addresses, and contact routes that can reasonably reach the decision maker.
+
+### Question 5 - Have all reasonable first-party sources been exhausted?
+
+External investigation may not begin until every question has been answered or no further official
+evidence exists that is reasonably likely to improve Sales Intelligence.
+
+Use first-party pages as evidence sources in this order when they exist:
+
+1. Homepage
+2. About / Our Story
+3. Team
+4. Leadership / Management
+5. Contact
+6. Footer
+7. Privacy Policy
+8. Terms of Service
+9. Careers
+10. Press / News
+
+A page counts as reviewed only after Jayce has opened it, read it for the unanswered investigation
+questions, checked visible navigation and page footer context, and recorded useful evidence or a
+clear "no material evidence found" note in the internal Investigation Record.
+
+If a page type is not visible in primary navigation, Jayce must still look for reasonable first-party
+variants before marking it absent. Examples include `/about`, `/our-story`, `/team`, `/leadership`,
+`/management`, `/contact`, `/privacy`, `/terms`, `/careers`, `/press`, `/news`, footer links, menu
+links, and other official pages exposed by the company website.
+
+Leadership, ownership, structure, and communication information discovered on first-party pages has
+priority over external sources.
+
+The first-party investigation ends when the questions have been answered, not when Jayce has merely
+completed a page list. First-party evidence does not eliminate later verification requirements. It
+determines the starting truth and authority priority for later LinkedIn, RocketReach, and
+public-source validation.
 
 ## Authority Hierarchy
 
@@ -267,16 +343,30 @@ selected because it was easier.
 
 When fallback is required:
 
-- First Name = `"[Company] Team"`
+- First Name = `"[Company Name] Team"`
 - Last Name = blank
-- Title = blank
+- Title = `Official Company Contact`
 - Use the best verified company email and phone available
 - Prefer a verified local company phone number. If no verified local company phone exists, use the
   best verified company phone available. A verified toll-free number is acceptable only when no
   verified local company number exists.
 - If no verified company email exists, include the verified contact form. If no verified contact form
   exists, explicitly state: "No verified company communication route found."
-- Do not invent a title
+- Never use `Official fallback contact - no reliable decision-maker found`.
+- The explanation that no reliable decision-maker was found belongs only in Jayce's internal
+  Communication Package context. It must never appear inside any CRM field.
+- Never place `Team` in the Last Name field.
+- Never split the company name across the first and last name fields.
+- Fallback contacts should appear as natural company contacts inside HubSpot.
+- Do not invent any other title
+
+Examples:
+
+- The Kitty Pass Team
+- Nimi Skincare Team
+
+Fallback contacts are permanent CRM records. They should be clean, professional, and immediately
+understandable to a salesperson.
 
 ## Investigation Status
 
@@ -306,6 +396,56 @@ Before ending an investigation, apply the completion and validation rules in
 - Deliver verified work email and verified work phone when available.
 - Do not place alternate emails into a secondary email slot.
 - Do not deliver personal, guessed, stale, or unsupported data as verified.
+
+## URL Normalization
+
+Before adding any website to the Communication Package or CRM Summary, normalize the URL.
+
+This applies to:
+
+- Official Website
+- Parent Company Website
+- Sister Company Website
+- Related Website
+- Alternate Website
+
+Remove:
+
+- `https://`
+- `http://`
+- trailing `/`
+
+Examples:
+
+```text
+Input:
+https://thekittypass.com/
+
+Output:
+thekittypass.com
+```
+
+```text
+Input:
+https://the-kitty-pass.myshopify.com
+
+Output:
+the-kitty-pass.myshopify.com
+```
+
+```text
+Input:
+http://example.com/
+
+Output:
+example.com
+```
+
+CRM data is normalized before it reaches Viktor.
+
+Jayce outputs standardized domains.
+
+Viktor writes exactly what Jayce provides.
 
 ## Write the Run Sheet
 

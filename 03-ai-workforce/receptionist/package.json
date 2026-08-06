@@ -7,13 +7,17 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "check": "node --check src/index.js && node --check src/config.js && node --check src/logger.js"
+    "names": "node src/naming/cli.js",
+    "names:live": "node src/naming/cli.js --live",
+    "check": "node --check src/index.js && node --check src/config.js && node --check src/logger.js && node --check src/conversation/conversation.js && node --check src/conversation/conversation-engine.js && node --check src/conversation/conversation-store.js && node --check src/conversation/telegram-message.js && node --check src/naming/cli.js && node --check src/naming/checker.js && node --check src/naming/exporter.js && node --check src/naming/generator.js && node --check src/naming/scorer.js",
+    "test": "node --test"
   },
   "engines": {
     "node": ">=20"
   },
   "dependencies": {
     "dotenv": "^17.4.2",
-    "pino": "^10.3.1"
+    "pino": "^10.3.1",
+    "telegraf": "^4.16.3"
   }
 }

@@ -64,3 +64,24 @@ Complete the Receptionist blueprint before implementation.
 Complete `tools.json`.
 
 No implementation begins until the blueprint has been approved.
+# Blueprint Approval
+
+## Architecture Review
+
+* [ ] Nick Approved
+* [ ] Jacob Approved
+
+## Engineering Review
+
+* [ ] Documentation Complete
+* [ ] No Conflicting Requirements
+* [ ] No Duplicate Sources of Truth
+* [ ] Ready for Codex Implementation
+
+## Status
+
+⬜ Implementation Not Authorized
+
+⬜ Ready for Implementation
+
+⬜ Implementation Complete

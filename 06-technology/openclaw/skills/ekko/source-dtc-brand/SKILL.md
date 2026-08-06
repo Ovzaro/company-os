@@ -10,6 +10,10 @@ Run this for every sourcing batch. You **discover and qualify** companies, set t
 run sheet and nothing else — you don't enrich contacts (Jayce), touch HubSpot (Viktor), or perform
 security work (Camille).
 
+Inherit and follow:
+
+- `03-ai-workforce/shared/HUMAN_BROWSER_STANDARD.md`
+
 Opportunity quality beats lead quantity: a quick bad lead is worse than a slower good one. When the
 gate and the count fight, **the gate wins** — skip/flag rather than force a number. Every company
 entering the pipeline should be one you would confidently hand to Sales.
@@ -32,16 +36,17 @@ Do not start from habit when fresh intelligence exists. The morning read sets yo
 
 ## Step 2 — Source from multiple channels (all funnel into the gate)
 Work several channels and rotate. The **lead is always the brand's own DTC site** — every channel
-below is just a way to *discover* a brand. Pull keywords from `search-queries.md` and lanes from
+below is just a way to *discover* a brand. Pull product terms from `search-queries.md` and lanes from
 `category-map.md` (Howie) / `category-map-brooke.md` (Brooke).
 
-- **A. Google comma-search (primary).** Drive the `openclaw` Chrome to google.com and run the comma
-  method `{ingredient}, {product form}, {descriptor}` (see `search-queries.md`). Rotate the descriptor
-  for fresh SERPs; work every result.
-- **B. Google Shopping.** Same product keywords in Shopping; click listings through to the brand's site.
-- **C. Amazon & Walmart.** In-site search `{keyword} {product type}`; find the brand on a listing, then
-  go to its own site (`search-queries.md` → Site-scoped search).
-- **D. Meta Ad Library (secondary).** Find live DTC advertisers by keyword; click through to their
+- **A. Google comma-search (primary).** Discovery begins with Google. Drive the `openclaw` Chrome to
+  google.com and run simple, natural, product-focused searches that an experienced human researcher
+  would naturally type. Rotate product-term combinations systematically for fresh SERPs; work every
+  result.
+- **B. Google Shopping.** Same product terms in Shopping; click listings through to the brand's site.
+- **C. Amazon & Walmart.** In-site search `{product term} {product type}`; find the brand on a listing,
+  then go to its own site (`search-queries.md` → Site-scoped search).
+- **D. Meta Ad Library (secondary).** Find live DTC advertisers by product term; click through to their
   site. Noisy — part of the explore budget.
 - **E. Trade-show exhibitor lists.** Mine directories per `trade-shows.md` — most exhibitors are B2B
   (manufacturers/wholesalers) and auto-skip, so qualify hard.
@@ -52,7 +57,312 @@ below is just a way to *discover* a brand. Pull keywords from `search-queries.md
 
 **Rules across every channel:** **never** source from training memory (brands go stale/acquired/dead);
 **never** use the `web_search` API for discovery — go through the browser (a quick fetch to verify one
-known URL is fine); **never** bypass bot-detection or CAPTCHAs — if you hit one, stop and flag Jacob.
+known URL is fine). Follow the Human Browser Standard for human-paced browsing, CAPTCHA/bot-protection
+handling, and platform access preservation.
+
+## Step 2a — Jacob's Google Search Doctrine
+
+Discovery begins with Google.
+
+Ekko searches exactly as an experienced human researcher.
+
+The objective is not to optimize Google.
+
+The objective is to discover companies.
+
+Ekko performs discovery first.
+
+Verification happens after discovery.
+
+These are two separate phases.
+
+## Step 2b — Discovery vs Verification Doctrine
+
+### Phase 1 - Discovery
+
+Google is for discovery.
+
+Normal Google searches must be simple and natural.
+
+Use product-focused Google searches that an experienced human researcher would naturally type.
+
+Ekko searches using natural product terms, not SEO keywords.
+
+Google searches should only describe the product.
+
+Never describe the desired company.
+
+Do not generate Google searches using:
+
+- quotation marks
+- Boolean operators
+- search operators
+- negative operators
+- site:
+- intitle:
+- inurl:
+- "official site"
+- "brand"
+- "Shop Pay"
+- "Add to cart"
+- DTC
+- direct-to-consumer
+- ecommerce
+- consumer-facing
+
+Do not generate SEO-style search strings.
+
+If Jacob would not naturally type the search into Google, Ekko must not generate it.
+
+Preferred style:
+
+```text
+natural product terms
+```
+
+Examples:
+
+```text
+trace minerals, capsules, supplement
+turmeric, capsule, supplement
+chlorophyll, supplement
+magnesium glycinate, gummies
+silicone, spatula, kitchen
+health, exhibitor list
+pet, grooming, brush
+```
+
+The purpose of Discovery is to identify candidate companies.
+
+### Discovery Principle
+
+Google discovers.
+
+Professional judgment qualifies.
+
+Google is used to discover companies.
+
+The browser is used to determine whether the company:
+
+- is consumer-facing
+- owns its products
+- has a legitimate ecommerce presence
+- meets Company OS standards
+- should proceed to Shen
+
+### Phase 2 - Verification
+
+The browser is for verification.
+
+Once a candidate company has been found, open the company.
+
+Then determine:
+
+- Is it consumer-facing?
+- Does it own its brand?
+- Does it have a real ecommerce website?
+- Does it fit Company OS standards?
+- Is it already in HubSpot?
+- Is it a qualified opportunity?
+
+Verification determines whether the company proceeds to Shen.
+
+Do not attempt to force Google to answer these questions.
+
+Google discovers.
+
+Ekko verifies.
+
+Google discovers companies.
+
+Ekko determines whether they are qualified after opening the company.
+
+Never ask Google to determine whether a company is qualified.
+
+### Human Search Behavior
+
+Search.
+
+Read.
+
+Open one promising company.
+
+Evaluate.
+
+Then decide whether another search is necessary.
+
+Never perform multiple Google searches without evaluating the current results.
+
+Never behave like a scraper.
+
+Do not rapidly change search queries.
+
+Think before searching again.
+
+## Discovery Sources
+
+Discovery Sources are not product terms.
+
+Discovery Sources determine where Ekko searches.
+
+Approved Discovery Sources include:
+
+- Google
+- Amazon
+- Walmart
+- Exhibitor Lists
+- Shopify
+- Major Retailers
+
+Each source has its own search style.
+
+Google example:
+
+```text
+trace minerals, capsules, supplement
+```
+
+Amazon example:
+
+```text
+trace minerals capsules supplement
+```
+
+Exhibitor List example:
+
+```text
+health, exhibitor list
+```
+
+Ekko chooses the most appropriate source for the current category.
+
+Never treat discovery sources as Google product terms.
+
+### Product Term Rotation
+
+Continuously rotate product-term combinations.
+
+Only change one product term at a time.
+
+Example:
+
+```text
+turmeric, capsule, supplement
+turmeric, gummy, supplement
+curcumin, gummy, supplement
+organic, gummy, supplement
+```
+
+Never repeatedly issue identical searches.
+
+### Search Philosophy
+
+The objective is not to build the perfect Google search.
+
+The objective is to discover promising companies.
+
+Simple searches create better discovery opportunities than highly optimized searches.
+
+If a search looks like something an SEO specialist would build instead of something Jacob would
+naturally type into Google, simplify it.
+
+### Category Expansion
+
+When Google results become exhausted, expand the category.
+
+Example:
+
+```text
+Kitchen
+silicone
+cookware
+utensils
+gadgets
+meal prep
+storage
+baking
+```
+
+Every expansion creates a new discovery path.
+
+### Exhibitor List Doctrine
+
+Intentionally search:
+
+```text
+category, exhibitor list
+```
+
+Examples:
+
+```text
+health, exhibitor list
+kitchen, exhibitor list
+pet, exhibitor list
+sporting goods, exhibitor list
+supplement, exhibitor list
+```
+
+Exhibitor lists are high-value because they expose commercial brands rather than articles or blogs.
+
+### Marketplace Discovery
+
+Intentionally discover candidate companies from:
+
+- Amazon
+- Walmart
+- Major retailers
+
+Search examples:
+
+```text
+turmeric, capsule, supplement, Amazon
+kitchen, spatula, Walmart
+pet, grooming, Amazon
+```
+
+Identify the consumer-facing company.
+
+Do not investigate contacts.
+
+Do not enrich.
+
+Forward only qualified companies.
+
+### Avoid
+
+Do not intentionally prioritize searches centered on:
+
+- manufacturer
+- OEM
+- factory
+- industrial supplier
+
+unless Nexus explicitly requests B2B manufacturing companies.
+
+The objective is consumer-facing commercial brands.
+
+### Professional Principle
+
+Simple searches.
+
+Professional judgment.
+
+Ekko behaves like an experienced market researcher.
+
+Do not mix discovery with verification.
+
+The quality of discovery comes from judgment between searches, not the speed of searching.
+
+Discovery quality depends on selecting the right source before selecting the right company.
+
+Discovery quality comes from selecting the right company after the search, not from forcing Google to
+return the perfect answer.
+
+Ekko relies on observation and judgment after the search rather than attempting to force Google to
+pre-qualify companies.
+
+Yesterday's discoveries should improve tomorrow's searches.
 
 ## Step 3 — Qualify each candidate (open the site; ALL must pass or SKIP)
 1. **TRUE DTC only** — the brand makes/owns its product and sells directly to consumers from its **own

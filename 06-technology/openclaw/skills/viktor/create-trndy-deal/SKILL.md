@@ -1,16 +1,16 @@
 ---
 name: create-trndy-deal
-description: Final-validate and create one approved TRNDY HubSpot deal in the browser — de-dupe, fields, owner/stage, contacts, verify, and preserve CRM integrity.
+description: Create one Shen-certified TRNDY HubSpot deal in the browser — de-dupe, fields, owner/stage, contacts, associations, read-back verification, and CRM integrity.
 ---
 
 # Create a TRNDY HubSpot Deal
 
-Run this every time you create a single **approved** TRNDY lead in HubSpot. Follow the steps in order
-— never skip final de-dupe. TRNDY's CRM only; never SnapFund. Work in the logged-in `openclaw`
-Chrome.
+Run this every time you create a single **Shen-certified and approved** TRNDY lead in HubSpot. Follow
+the steps in order — never skip final de-dupe. TRNDY's CRM only; never SnapFund. Work in the
+logged-in `openclaw` Chrome.
 
-The CRM is the company's permanent record. Nothing enters it until it has earned its place: approved,
-validated, de-duplicated, accurately written, and verified.
+The CRM is the company's permanent record. Nothing enters it until it has earned its place:
+Shen-certified, approved, de-duplicated, accurately written, associated, read back, and verified.
 
 ## CRM execution standard — browser only
 
@@ -24,21 +24,25 @@ a trained human operator would do inside HubSpot:
 - Verify creation through the browser.
 - Read created Deal IDs through the browser.
 
-Do **not** use HubSpot APIs for normal CRM creation, de-duplication, validation, field writing, or
-verification. Do **not** use API tokens as an alternative workflow.
+Do **not** use HubSpot APIs for normal CRM creation, de-duplication, field writing, association
+verification, read-back verification, or CRM write verification. Do **not** use API tokens as an
+alternative workflow.
 
-**You only INPUT.** Ekko already found the company + celeb and Jayce already found the decision-makers,
-titles, emails, and phones — it's all in the run sheet. You don't source companies or find contacts
-yourself. If a required field is missing from the run sheet, **flag it back to Nexus** rather than
-going to find it.
+**You only execute CRM writes.** Shen has already certified the Communication Package. Ekko already
+found the company + celeb and Jayce already found the decision-makers, titles, emails, and phones.
+You don't source companies, find contacts, or certify packages yourself. If a required value is
+missing despite certification, stop and report a write failure to Nexus rather than going to find it.
 
 Viktor participates twice in the workflow:
 - **Stage 1 — Early HubSpot de-dupe:** after Ekko sourcing, check whether sourced companies already
   exist before Jayce spends enrichment effort. Do not create records in Stage 1.
-- **Stage 2 — Final validation + write:** after Jayce Contact Intelligence and Jacob approval, run
-  final HubSpot de-dupe immediately before writing, then create only still-clear records.
+- **Stage 2 — Certified write:** after Shen certification and Jacob approval, receive the Certified
+  Communication Package, run final HubSpot de-dupe immediately before writing, then create only
+  still-clear records.
 
-## Inputs (from the run sheet)
+## Inputs
+
+- Certified Communication Package
 - `website`/domain, company/brand name, category
 - `decision_makers[]` ({name, title, email, phone}), `team_contact` (if any), the **primary** email
 - `selected_celeb` (display name), `industry_category`, `time_zone` (derive from the US HQ location)
@@ -70,7 +74,12 @@ integrity for speed.
 - **General company info** = fill every known company / brand / website / URL field cleanly; don't
   leave known data for Jacob to backfill.
 - **Manual properties:** `celeb_name`, `celeb_category`, `industry_category`, `time_zone`.
-  - `celeb_name` quirk: for **Brooke Burke**, write **`Joe Theismann`**. All other celebs use their own name.
+  - HubSpot Property Mapping: when Company OS selects **Brooke Burke**, write the HubSpot internal
+    value **`Joe Theismann`**.
+  - This mapping exists only for HubSpot compatibility. Professionals continue using the display name
+    **Brooke Burke**.
+  - Do not create a new Brooke Burke option in HubSpot.
+  - All other celebs use their own name.
 - **Description** (required) = **only** the company/brand name, plus any **parent company or
   subsidiary** name **and URL**. **Nothing else** — no addresses, research notes, caveats,
   contact/call/celeb notes, rationale, fit summaries, source notes, or enrichment notes.
@@ -80,10 +89,10 @@ integrity for speed.
 **The email is what creates a contact in our system.** Every contact needs a valid email in the right
 field — that's the trigger.
 
-- **Titles must be the real role.** Enter each person's title exactly as the run sheet gives it —
-  **`CEO`, `Founder`, `Co-Founder`**, etc. **Never** type a generic placeholder like "Decision Maker."
-  If a real title is missing from the run sheet, **flag it back to Nexus** (Jayce finds titles) — don't
-  invent one.
+- **Titles must be the real role.** Enter each person's title exactly as the Certified Communication
+  Package gives it — **`CEO`, `Founder`, `Co-Founder`**, etc. **Never** type a generic placeholder
+  like "Decision Maker." If a required value is missing despite certification, stop and report a write
+  failure to Nexus. Do not repair, infer, or invent the value.
 - **Primary decision-maker's email → `n3___dm_email`** (the field that creates/associates the contact).
   Do **not** use `dm_1_second_email` for it.
 - **Every other decision-maker** (extra co-founders / execs) → its own **additional contact** on the
@@ -106,9 +115,15 @@ script, token-backed integration, or any non-browser workflow.
 ## Step 5 — Verify & record
 - Open the created deal and confirm: owner `76430723`, stage 💚RTG, deal name, single company name,
   `celeb_name` (with the Joe Theismann mapping if Brooke), and that `n3___dm_email` populated.
+- Verify required Deal-to-Company and Deal-to-Contact associations.
+- Read the CRM record back and confirm it matches the Certified Communication Package.
 - Read the created Deal ID from the browser, then write `hubspot_status = written` and the new
   `hubspot_deal_id` to the run sheet.
 - Honor the pacing Nexus gives you (one create per the 5–15 min window) — never burst.
+
+Viktor's first responsibility is: **Receive Certified Communication Package.**
+
+Viktor's final responsibility is: **Verified CRM Write Complete.**
 
 ## Permanent-record standard
 - Every write must be intentional.
