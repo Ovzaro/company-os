@@ -1,0 +1,1051 @@
+# Final OpenClaw Runtime Audit — August 19, 2026
+
+Scope inspected read-only:
+
+- `/Users/nexus/.openclaw`
+- `/Users/nexus/Projects/Ovzaro/company-os/03-ai-workforce`
+- Relevant Portal integration code in `/Users/nexus/Projects/Ovzaro/portal`
+
+No files were created, modified, moved, deleted, or executed. No agents, cron jobs, browser automation, Telegram sends, HubSpot operations, or network requests were performed. Credential values are omitted.
+
+## Executive assessment
+
+OpenClaw is alive, but the overall installation is degraded rather than healthy.
+
+The gateway is running and listening locally. Nexus and Camille are executing today, and scheduled jobs are firing. However:
+
+- The gateway has recorded repeated crashes and currently reports three successive crashes.
+- The most recent termination signal was an abort.
+- A main-agent cron session became stuck for over 40 minutes this morning.
+- Backups are producing multi-gigabyte archives, but the archive operation reports errors and the health checker incorrectly says no backups exist.
+- Live instructions have substantial drift from Company OS.
+- The production Sales workflow has not run since July 22 and is not verified operational today.
+- Camille is actively detecting and recording problems, but her quarantine mechanism copies evidence without resolving source state, causing repeated incidents.
+- The Portal has a generic Workforce HTTP adapter but is not locally configured to reach OpenClaw, and OpenClaw does not expose the Portal-specific agent/event contract that adapter expects.
+- Azir, Ryze, Swain, and Twisted Fate have each executed a Telegram test session, but they lack Portal data access, event routing, storage adapters, or production workflows. They are installed conversational agents, not implemented product workers.
+
+Overall classification: **live but degraded, drifted, and not production-ready as one coherent Ovzaro platform**.
+
+---
+
+# A. OpenClaw core runtime
+
+## Gateway status
+
+The gateway is currently running.
+
+Evidence:
+
+- launchd job: `ai.openclaw.gateway`
+- State: `running`
+- PID present
+- Listening on loopback IPv4 and IPv6 at port `18789`
+- Working directory: `/Users/nexus/.openclaw`
+- `KeepAlive` and `RunAtLoad` enabled
+- Gateway log received successful WebSocket session-list traffic through August 19
+
+Startup command structure:
+
+```text
+node /opt/homebrew/lib/node_modules/openclaw/dist/index.js gateway --port 18789
+```
+
+Current installed/service version: **OpenClaw 2026.4.26**.
+
+The version appears consistently in:
+
+- launchd service metadata
+- runtime plugin directory
+- `openclaw.json` metadata
+- last configuration wizard metadata
+
+## Controlling configuration
+
+Primary runtime configuration:
+
+- `/Users/nexus/.openclaw/openclaw.json`
+
+Related configuration/evidence:
+
+- `openclaw.json.last-good`
+- four numbered backup copies plus `openclaw.json.bak`
+- launchd plist at `/Users/nexus/Library/LaunchAgents/ai.openclaw.gateway.plist`
+- agent directories under `/Users/nexus/.openclaw/agents`
+- workspaces under `/Users/nexus/.openclaw/workspace*`
+- cron configuration under `/Users/nexus/.openclaw/cron`
+- configuration health/audit logs under `/Users/nexus/.openclaw/logs`
+
+Gateway exposure is loopback-only. Tailscale is disabled. Gateway token authentication is configured. The Control UI permits insecure authentication, although loopback binding reduces external exposure.
+
+## Health and stability
+
+Positive evidence:
+
+- Gateway is currently listening.
+- Recent successful WebSocket operations exist.
+- Cron state is being updated.
+- Main and Camille sessions were active today.
+- The current configuration has a known-good hash and no current suspicious signature.
+- Telegram polling state continues to change for at least one account.
+
+Negative evidence:
+
+- launchd reports seven runs and **three successive crashes**.
+- Last terminating signal: **Abort trap 6**.
+- One captured stability incident on August 11 was an uncaught `ENETUNREACH` exception.
+- Gateway logs contain a large historical volume of errors, failures, timeouts, HTTP authorization failures, rate limiting, restarts, and termination signals.
+- On August 19, one duplicate blacklist cron session remained in `processing` for at least 2,430 seconds.
+- The gateway error log stopped updating shortly after that stuck-session sequence, while other runtime evidence continued later.
+- Configuration audit history shows the August 4 agent expansion was performed from the stale path `/Users/nexus/Desktop/core`.
+
+Classification: **operational but unstable/degraded**.
+
+## Runtime directories
+
+Major live areas include:
+
+- `agents/` — model/auth/session state
+- `workspace` and `workspace-*` — agent instructions and working data
+- `cron/` — OpenClaw scheduler
+- `logs/` — gateway, security, configuration, backup evidence
+- `run-sheets/` — Sales workflow artifacts and quarantine
+- `telegram/` — polling offsets
+- `browser/` and `media/browser/` — browser runtime state/artifacts
+- `memory/` — agent memory databases
+- `delivery-queue/` — outbound delivery state
+- `flows/` — SQLite flow registry
+- `plugins/` and `plugin-runtime-deps/`
+- `subagents/`, `tasks/`, and `acpx/`
+
+Default workspace: `/Users/nexus/.openclaw/workspace`
+
+Default/active agent: `main`, identified as Nexus.
+
+## Backup system
+
+There are two launchd services:
+
+- Daily backup at 03:00
+- Daily health check at 12:00
+
+The backup system is not trustworthy in its present form.
+
+Observed facts:
+
+- 65 timestamped iCloud archives exist, despite the script claiming retention of only 30.
+- An August 19 archive exists and is approximately 2.9 GB.
+- Backup logs show repeated tar failures involving:
+  - inability to read the external Excel ledger
+  - runtime files disappearing while the live directory is archived
+- Because tar creates the output archive before failing, a failed/partial archive can remain.
+- Later invocations see the date-matched archive and incorrectly skip.
+- Retention cleanup does not execute if tar exits first.
+- The health checker simultaneously reports the backup directory as empty, despite archives being present.
+
+Conclusion: **backup scheduling works, but backup validity, health detection, and retention are broken**. Existing archives must not be assumed restorable.
+
+---
+
+# B. Agent registry and live installation
+
+All twelve requested runtime agents are registered and have dedicated workspaces.
+
+Every workspace has:
+
+- `AGENTS.md`
+- `IDENTITY.md`
+- `SOUL.md`
+- `TOOLS.md`
+- `HEARTBEAT.md`
+
+`MEMORY.md` is absent only for Azir, Ryze, Swain, and Twisted Fate.
+
+All inherit or declare `openai-codex/gpt-5.5`. Global model authentication is structurally configured. Most per-agent auth-profile files are empty; main and Camille currently hold populated local profile state. Empty per-agent profiles do not necessarily block inherited global authentication, but they weaken independent verification.
+
+| Agent | Sessions in registry | Most recent activity | Trigger pattern | Current classification |
+|---|---:|---|---|---|
+| Nexus/main | 380 | Aug 19 | Human/main, cron, orchestration | Actively operational, degraded |
+| Ekko | 92 | Jul 22 | Primarily Nexus subagent | Installed but idle |
+| Jayce | 71 | Jul 22 | Primarily Nexus subagent | Installed but idle |
+| Viktor | 127 | Jul 22 | Primarily Nexus subagent | Installed but idle; high-risk stale lane |
+| Heimerdinger | 14 | Aug 7 | Delegated subagent | Installed but idle |
+| Camille | 7 active registry keys; extensive archived files | Aug 19 | Daily/hourly cron, Telegram | Actively operational |
+| Shen | 25 | Jul 22 | Primarily Nexus subagent | Installed but idle |
+| Azir | 1 | Aug 4 | Telegram test | Installed/configured but unverified |
+| Ryze | 1 | Aug 4 | Telegram test | Installed/configured but unverified |
+| Swain | 1 | Aug 4 | Telegram test | Installed/configured but unverified |
+| Twisted Fate | 1 | Aug 4 | Telegram test | Installed/configured but unverified |
+| Nasus | 2 | Jun 21 | Telegram | Stale legacy/external |
+
+The much larger physical session-file counts come from transcripts, trajectories, indexes, and related metadata, not distinct logical sessions.
+
+## Tools and capabilities
+
+Global tool profile is `coding`, which grants every agent unless overridden:
+
+- filesystem read/write/edit
+- shell execution
+- web search/fetch
+- memory
+- session inspection and messaging
+- subagent spawning
+- cron management
+- image/media tools
+- plugin MCP tools
+
+That is much broader than the product roles need.
+
+Explicit browser grants exist for:
+
+- Ekko
+- Jayce
+- Viktor
+- Heimerdinger
+- Camille
+
+Nexus, Shen, Azir, Ryze, Swain, Twisted Fate, and Nasus do not have an explicit browser grant in `openclaw.json`.
+
+There is no dedicated HubSpot tool configured. Historical HubSpot access occurred through browser state and scripts. Shell execution means policy is currently doing more work than technical enforcement: a broadly capable agent could still invoke local scripts or credential-bearing processes unless separately sandboxed.
+
+---
+
+# C. Source-of-truth drift
+
+## Core file comparison
+
+| Agent | AGENTS.md | IDENTITY.md | SOUL.md | Direction of drift |
+|---|---|---|---|---|
+| Nexus | Different | Different | Different | Company OS is newer/more canonical |
+| Ekko | Different | Match | Match | Live retains old TRNDY base; Company OS adds current contracts |
+| Jayce | Different | Match | Match | Same |
+| Viktor | Different | Different | Different | Company OS has newer certified-package/write doctrine |
+| Heimerdinger | Different | Match | Match | Company OS has newer knowledge-promotion doctrine |
+| Camille | Different | Match | Match | Live retains old embedded base |
+| Shen | Different | Match | Different | Company OS has substantially expanded certification role |
+| Azir | Match | Match | Match | Aligned |
+| Ryze | Different | Match | Match | Live prepends old TRNDY base/preflight |
+| Swain | Different | Match | Match | Live prepends old TRNDY base/preflight |
+| Twisted Fate | Different | Match | Match | Live prepends old TRNDY base/preflight |
+
+## Material differences
+
+### Nexus
+
+Live Nexus is internally split:
+
+- Its top-level identity and soul describe a general personal partner/friend.
+- A later section in live `AGENTS.md` describes the TRNDY Lead Generation COO.
+- Company OS consistently defines Nexus as Lead Generation Division COO.
+
+Live therefore contains the operational COO workflow, but that role is not the primary identity contract.
+
+### Sales agents
+
+Ekko, Jayce, Viktor, Heimerdinger, Camille, and Shen still embed a shared base declaring them agents for **TRNDY Social only**. Company OS now relies on separately referenced shared standards and newer professional handoff contracts.
+
+Company OS is newer for:
+
+- Workflow Packets
+- Discovery Packets
+- human-browser behavior
+- professional boundaries
+- certification stages
+- communication-package handoff
+- CRM completion/read-back
+- organizational structure
+
+### Shen
+
+Live Shen is principally:
+
+- de-duplication owner
+- organizational-integrity/boundary auditor
+
+Company OS expands Shen into three explicit certification gates:
+
+1. Discovery certification
+2. Communication Package certification
+3. Post-write CRM Integrity certification
+
+This newer Company OS sequence is not deployed live.
+
+### Viktor
+
+Live Viktor still reflects the older pattern of accepting Ekko/Jayce inputs and performing de-duplication-related work.
+
+Company OS moves final authority to:
+
+- Shen-certified Communication Package
+- one Deal per lead
+- association verification
+- CRM read-back
+- explicit post-write failure handling
+
+### Product agents
+
+Azir is aligned.
+
+Ryze, Swain, and Twisted Fate have their current Company OS role text, but their live `AGENTS.md` files prepend the obsolete TRNDY shared base. This creates contradictory scope, run-sheet, HubSpot, and operating assumptions.
+
+## Deployment conclusion
+
+Company OS is **not consistently deployed**. It is a specification repository, not an automated source feeding OpenClaw.
+
+Live-only newer logic includes Nexus’s July 19 TRNDY description-field and operational timing rules. Company OS-only newer logic includes most of the formal packet/certification/professional-boundary architecture.
+
+---
+
+# D. Nexus orchestration
+
+## Actual role
+
+Nexus partially believes it is the Lead Generation Division COO, but this is not its clean primary identity.
+
+The live operational section says Nexus:
+
+- coordinates rather than performs lead generation
+- owns go/no-go decisions, workflow integrity, and escalation
+- delegates specialists
+- does not write HubSpot
+- should not bypass approval or security gates
+
+Its identity/soul still describe a general-purpose personal AI partner. Therefore the answer is:
+
+**Functionally yes in one program section; constitutionally no, because its primary live identity is still the older general Nexus.**
+
+## Delegation
+
+Nexus can currently spawn:
+
+- Ekko
+- Jayce
+- Viktor
+- Heimerdinger
+- Camille
+- Shen
+
+Shen is allowed. Camille is allowed.
+
+Nexus cannot spawn:
+
+- Azir
+- Ryze
+- Swain
+- Twisted Fate
+- Nasus
+
+## Browser and HubSpot
+
+- Direct browser: **No explicit browser tool grant**
+- Direct HubSpot connector: **None**
+- Shell/web capabilities: **Yes**
+- Technical ability to run local scripts: **Yes**
+- Instructional permission to write HubSpot: **No**
+
+This is an enforcement gap: the policy says Nexus must delegate, while the global coding profile grants enough local power to bypass role separation accidentally.
+
+## Live canonical sequence
+
+Live Nexus currently believes this sequence is canonical:
+
+1. Receive batch goal and consult Heimerdinger intelligence.
+2. Ekko sources candidates.
+3. Shen runs pre-enrichment de-duplication.
+4. Camille audits security-sensitive handoffs when needed.
+5. Jayce enriches cleared survivors using RocketReach/browser research.
+6. Nexus assembles the batch for explicit human approval.
+7. Shen performs final live de-duplication.
+8. Viktor writes approved records one at a time through the allowed HubSpot UI path.
+9. Heimerdinger writes the Excel ledger and updates learning signals.
+
+Company OS now expects a more formal packet-and-certification sequence, so live Nexus is not aligned.
+
+---
+
+# E. Sales workforce current state
+
+## Historical execution
+
+There is extensive evidence of real execution through July 22:
+
+- discovery packets
+- enrichment results
+- de-duplication artifacts
+- certification artifacts
+- workflow packets
+- HubSpot write reports
+- Excel ledger updates
+- recovery/retry scripts
+- approval and hold records
+- human-browser runs
+- RocketReach-dependent enrichment
+- repeated production and acceptance batches
+
+This was not merely documentation. The workforce genuinely operated.
+
+## Structural dependencies
+
+The current workflow depends on:
+
+- shared OpenClaw browser profile and logged-in HubSpot state
+- RocketReach browser/login state
+- local run sheets
+- local checked-domain blacklist
+- external Excel ledger under the user’s Documents directory
+- explicit human approval
+- Shen certification
+- browser timing and page-state assumptions
+- multiple ad hoc Python and shell scripts
+- older TRNDY board names and workflow surfaces
+
+## Current state distinctions
+
+### A. Historically executed
+
+**Yes.** Strong evidence for Ekko, Jayce, Shen, Viktor, Heimerdinger, Camille, and Nexus.
+
+### B. Structurally runnable today
+
+**Partially.** The registry, workspaces, model inheritance, browser grants, scripts, and orchestration remain present.
+
+### C. Verified operational today
+
+**No.** The main Sales specialists have not run since July 22; Heimerdinger’s later August activity does not constitute an end-to-end Sales run.
+
+### D. Currently blocked
+
+The safe production workflow should be treated as blocked pending:
+
+- resolution of active duplicate/write-path residue
+- reconciliation of live and Company OS instructions
+- browser and RocketReach session verification
+- repair of the duplicate blacklist scheduler
+- confirmation that scripts and paths are still valid
+- verification of the Excel dependency
+- re-certification of HubSpot read/write boundaries
+
+Historical success must not be treated as current readiness.
+
+---
+
+# F. Camille security system
+
+## Scheduled invocation
+
+Camille has two enabled jobs:
+
+- Daily security sweep at 03:00 ET
+- Hourly non-blocking batch watch
+
+The daily sweep scans:
+
+- live configuration against a security baseline
+- gateway logs
+- recent run sheets
+- recent scraped content
+- recent HubSpot additions, where available
+- prompt-injection, exfiltration, ownership, and write-path signals
+
+The hourly watch scans recent run sheets and scraped content for similar integrity problems.
+
+## Authority and behavior
+
+Camille can:
+
+- inspect evidence
+- append security logs
+- create quarantine directories
+- copy suspect artifacts into quarantine
+- warn/escalate
+- recommend pausing or restricting work
+- send configured Telegram alerts
+
+Camille does not automatically:
+
+- fix configuration
+- remove or alter active source records
+- remediate HubSpot
+- stop processes
+- merge/delete duplicate CRM records
+- close incidents after human review
+
+Quarantine is predominantly **copy-based evidence preservation**. Source records remain in place. Some older documentation uses “move” language, but recent incidents explicitly say the source was preserved.
+
+## Quarantine volume
+
+The live count observed was:
+
+- **479 quarantine directories**
+- **2,408 files**
+
+This differs from the approximate 643 reported by the user, likely because the larger number includes files, older non-directory quarantine artifacts, a prior point-in-time count, or a different counting method.
+
+Recent directory creation:
+
+- Aug 14: 24
+- Aug 15: 16
+- Aug 16: 19
+- Aug 17: 10
+- Aug 18: 2
+- Aug 19: 1
+
+## FlyingPawfect/Viktor incidents
+
+The recent pattern is clear:
+
+- A July 22 Viktor write record reports a record creation followed by a local duplicate indication.
+- Camille copies the same pair of source records into a new quarantine directory.
+- The source remains in the active run-sheet directory.
+- The hourly watcher finds it again.
+- A new incident is created.
+- No resolution state suppresses future alerts.
+
+The evidence points to a combination of:
+
+1. A real unresolved data-integrity question
+2. Stale active residue
+3. Watcher duplication
+4. Configuration/process drift
+
+It is not evidence of hundreds of distinct new breaches.
+
+## Deduplication and lifecycle
+
+Effective incident deduplication is absent. Naming the incident “repeat” or “contained” does not prevent recreation.
+
+There is no durable lifecycle such as:
+
+```text
+new → acknowledged → contained → resolved → suppressed
+```
+
+Unresolved source records therefore remain permanently actionable.
+
+## Alerts
+
+- Camille has a Telegram account mapping and route.
+- The daily August 19 sweep reports successful delivery.
+- The hourly watch reports not delivered on its latest run, which may mean it returned `NO_REPLY` rather than an alert failure.
+- Earlier evidence records configured and delivered security notifications.
+
+Thus Camille alerts are structurally configured and at least some outbound messages have worked.
+
+## Security conclusion
+
+Camille is genuinely protecting the system through detection, containment evidence, and escalation. She is not remediating it.
+
+The quarantine volume is a **design and problem-management issue that should be fixed before expansion**. Without deduplication and closure, genuine new incidents will be buried in repetitive residue.
+
+---
+
+# G. Cron and background automation
+
+## OpenClaw cron inventory
+
+| Job | Owner | Schedule | Purpose | Last status | Health | Ovzaro disposition |
+|---|---|---|---|---|---|---|
+| Memory Dreaming Promotion | Defaults to main | 03:00 daily | Promote repeated short-term memories | OK | Working | Preserve, review scope |
+| Lead Pattern Learning | Defaults to main | 04:00 ET daily | Read Sales/CRM patterns and update lead intelligence | OK | Functionally active but TRNDY-specific | Legacy/TRNDY; isolate |
+| Blacklist Sync A | Defaults to main | 04:15 ET daily | Read-only HubSpot/domain blacklist refresh | Reported OK after ~22m | Degraded | Consolidate |
+| Blacklist Sync B | Defaults to main | Same time and payload | Duplicate of A | Reported OK after ~41m | Broken design; produced stuck session evidence | Remove duplicate after approval |
+| Camille security sweep | Camille | 03:00 ET daily | Config/log/security integrity sweep | OK; delivered | Working, noisy | Preserve and redesign lifecycle |
+| Camille watch | Camille | Hourly | Recent batch security watch | OK; latest not delivered | Working, noisy | Preserve with deduplication |
+
+No OpenClaw cron invokes:
+
+- Ekko
+- Jayce
+- Viktor
+- Heimerdinger
+- Shen
+- Azir
+- Ryze
+- Swain
+- Twisted Fate
+- Nasus
+
+No agent heartbeat jobs are configured.
+
+## launchd background jobs
+
+Separate from OpenClaw cron:
+
+- Gateway: continuous KeepAlive
+- Backup: daily 03:00
+- Backup health check: daily 12:00
+
+The backup and health-check jobs require repair, as described above.
+
+---
+
+# H. Telegram
+
+## Structural wiring
+
+| Agent/account | Mapping exists | Offset/state exists | Last meaningful indication |
+|---|---|---|---|
+| Nexus/default | Yes, default account | Yes | Offset last changed Jul 24 |
+| Ekko | Yes | Yes | Jul 7 |
+| Jayce | Yes | Yes | Jun 26 |
+| Viktor | Yes | Yes | Jun 25 |
+| Heimerdinger | Yes | Yes | Jul 9 |
+| Camille | Yes | Yes | Aug 4; current cron delivery evidence |
+| Shen | Yes | Yes | Jul 7 |
+| Azir | Yes | Yes | Aug 4 |
+| Ryze | Yes | Yes | Aug 4 |
+| Swain | Yes | Yes | Aug 4 |
+| Twisted Fate | Yes | Yes | Aug 4 |
+| Nasus | Yes | Yes | Aug 18 polling offset |
+
+Offsets show that polling state has existed or advanced. They do not alone prove a recent human inbound message.
+
+## Outbound assessment
+
+- Outbound Telegram is configured for all mapped accounts.
+- Camille has verified recent delivery evidence.
+- Historical sessions show Telegram operation for the other accounts.
+- There is no recent outbound proof for most idle agents.
+- No duplicate account-to-agent binding was observed.
+- Twisted Fate’s live Telegram binding conflicts with its Company OS rule that Version 1 supports website notifications only.
+- Nexus/default lacks an explicit agent route because it operates as the default account.
+
+Telegram is **partly live**, not uniformly verified.
+
+---
+
+# I. Recent agent activity
+
+| Agent | Last 24h | Last 7d | Last 30d | Interpretation |
+|---|---|---|---|---|
+| Nexus | Yes | Yes | Yes | Human/main and cron activity |
+| Camille | Yes | Yes | Yes | Primarily cron security activity |
+| Ekko | No | No | Yes | Delegated Sales work stopped Jul 22 |
+| Jayce | No | No | Yes | Delegated Sales work stopped Jul 22 |
+| Viktor | No | No | Yes | Delegated Sales work stopped Jul 22 |
+| Shen | No | No | Yes | Delegated Sales work stopped Jul 22 |
+| Heimerdinger | No | No | Yes | Delegated activity through Aug 7 |
+| Azir | No | No | Yes | Single Telegram test |
+| Ryze | No | No | Yes | Single Telegram test |
+| Swain | No | No | Yes | Single Telegram test |
+| Twisted Fate | No | No | Yes | Single Telegram test |
+| Nasus | No | No | No | Last agent session Jun 21 |
+
+Most historical Sales subagent sessions are marked done, with some timeouts and at least one stale running status. Status metadata establishes execution, not correctness.
+
+---
+
+# J. Azir, Ryze, Swain, and Twisted Fate
+
+## Azir
+
+Live role: Chief Website Workflow Agent / workflow-state governor.
+
+Present:
+
+- complete core instruction set
+- explicit model
+- Telegram route and polling state
+- one successful Telegram session
+- Company OS alignment
+
+Missing:
+
+- Portal API/event consumer
+- workflow database adapter
+- authorization model tied to Portal tenants
+- task/checklist transition implementation
+- audit-log writer connected to Portal
+- cron or event subscription
+- Nexus delegation path
+
+Classification: **configured conversational shell with one test execution**.
+
+## Ryze
+
+Live role: Chief Data & Reporting Officer.
+
+Present:
+
+- model and Telegram route
+- one successful Telegram session
+- reporting doctrine
+- current Company OS role content
+
+Problems:
+
+- live `AGENTS.md` is contaminated with old TRNDY shared rules
+- no Portal operational-event feed
+- no KPI/report repository connection
+- no scheduled reporting
+- no authorized event handoff
+- no tenant-aware reporting storage
+
+Classification: **installed/configured but unverified shell**.
+
+## Swain
+
+Live role: Chief Executive Officer/Executive Agent producing summaries from verified Ryze reports.
+
+Present:
+
+- model and Telegram route
+- one successful Telegram session
+- executive summary doctrine
+
+Missing:
+
+- Ryze reporting event input
+- Portal report data access
+- scheduled summary process
+- executive insight persistence
+- tenant isolation
+- downstream Portal presentation contract
+
+Classification: **installed/configured but unverified shell**.
+
+## Twisted Fate
+
+Live role: Chief Communications Officer for website notifications.
+
+Present:
+
+- model
+- Telegram route
+- one successful Telegram session
+- website-notification doctrine
+
+Conflicts/missing:
+
+- Telegram is enabled even though its live role says website notifications only.
+- No Portal notification repository connection.
+- No recipient resolution.
+- No delivery event consumer.
+- No website-notification write API.
+- No tenant-aware delivery state.
+
+Classification: **installed/configured but unverified shell with a channel-policy conflict**.
+
+## Collective conclusion
+
+All four have executed as OpenClaw conversational agents. None is implemented as a production Portal worker.
+
+An `AGENTS.md`, a model, and a Telegram test prove installation—not product functionality.
+
+---
+
+# K. Nasus
+
+Nasus is a SnapFund website-building agent.
+
+High-level role:
+
+- maintains the SnapFund website
+- works through Git and pull requests
+- may use browser preview workflows
+- must obtain human approval before merge/publish
+- uses a separate identity and repository context
+
+Assessment:
+
+- Not part of Ovzaro
+- Not part of Company OS
+- Independent from the Sales workforce
+- Last agent activity was June 21
+- Telegram polling state is newer than agent session activity
+- No cron invokes it
+- Not in Nexus’s delegation allowlist
+
+Nasus should remain untouched unless separately audited. Its presence does not cause a direct ID conflict, but mixing its private external venture credentials and workspace inside the same OpenClaw root expands the blast radius of gateway, backup, and global-tool failures.
+
+Classification: **legacy/external, currently stale**.
+
+---
+
+# L. Configuration and security drift
+
+Material findings:
+
+1. **Old source path**
+   - August 4 config edits came from `/Users/nexus/Desktop/core`.
+   - This is archived/stale infrastructure, not the current Company OS path.
+
+2. **Broad global tool profile**
+   - Every agent inherits filesystem write, shell, web, cron, sessions, and plugin MCP access.
+   - Product shells have much more technical capability than their defined roles require.
+
+3. **Browser over-granting**
+   - Camille, Heimerdinger, and the Sales specialists have explicit browser grants.
+   - Some are justified historically, but grants should be role-scoped and re-certified.
+
+4. **Policy-only HubSpot separation**
+   - No first-class HubSpot connector is configured.
+   - Browser and shell-based access make enforcement dependent on instructions and local state.
+
+5. **Duplicate cron**
+   - Two identical blacklist jobs run concurrently.
+
+6. **Stale session statuses**
+   - Old subagent entries include running/timeout states.
+   - The latest duplicate blacklist run became stuck.
+
+7. **Telegram/product conflict**
+   - Twisted Fate is bound to Telegram despite website-only communication rules.
+
+8. **TRNDY contamination**
+   - Most live `AGENTS.md` files retain TRNDY-only shared rules.
+   - Product agents Ryze, Swain, and Twisted Fate inherit irrelevant Sales/HubSpot/run-sheet language.
+
+9. **Source drift**
+   - Company OS is not automatically deployed.
+   - Azir is the only fully aligned core agent.
+
+10. **Credential architecture**
+    - Credentials are spread across primary config, per-agent auth files, token files, `.env` material, browser state, and historical scripts/logs.
+    - Camille previously reported credential material appearing in config-audit command arguments.
+
+11. **Control UI**
+    - Insecure authentication is permitted, though gateway binding is loopback-only.
+
+12. **Isolation**
+    - Ovzaro, TRNDY, SnapFund/Nasus, personal Nexus, and Portal product agents share one runtime root, model/auth environment, scheduler, logs, and backup boundary.
+
+---
+
+# M. Portal ↔ Company OS ↔ OpenClaw
+
+## Actual relationship
+
+### Portal
+
+Portal controls:
+
+- application UI
+- authentication/authorization
+- workspace/domain data models
+- operational event, run, assignment, inbox, and communication repositories
+- employee profile pages
+- generic `/api/workforce` proxy
+- Receptionist UI
+
+Portal can forward a generic envelope containing:
+
+- executive identifier
+- conversation identifier
+- message
+- optional context
+
+But the checked local Portal environment does not contain the required Workforce API URL/token variables. Its present local environment only contains Receptionist/demo-related settings.
+
+### Company OS
+
+Company OS controls documentation/specification:
+
+- canonical roles
+- professional boundaries
+- handoff contracts
+- workflow packets
+- certification standards
+- operating procedures
+
+It does not automatically deploy into OpenClaw and does not itself execute agents.
+
+### OpenClaw
+
+OpenClaw controls:
+
+- live agent identities and instructions
+- models/authentication
+- Telegram routing
+- browser/tool access
+- sessions
+- cron
+- run sheets
+- live orchestration
+
+## Connectivity
+
+Portal contains a generic HTTPS Workforce adapter, but there is no evidence that it is connected to this local OpenClaw gateway.
+
+The live gateway:
+
+- is loopback-only
+- uses OpenClaw’s own token-authenticated protocol/UI
+- does not show a Portal-specific `/api/workforce` executive-routing service
+- has no Portal event/database adapter
+
+Therefore:
+
+- Portal cannot currently invoke individual OpenClaw agents through the inspected local configuration.
+- Azir/Ryze/Swain/Twisted Fate cannot currently affect Portal state.
+- There is no shared event bus.
+- There is no shared production database connection.
+- Portal’s internal operational-event abstractions are not wired to OpenClaw.
+- Receptionist is separate from OpenClaw. Its Portal configuration uses a separate receptionist endpoint and Company OS has a separate Receptionist specification.
+- Company OS is not consistently deployed into OpenClaw.
+
+## Authority
+
+Current practical authority:
+
+- Live behavior: OpenClaw workspace files
+- Intended behavior: Company OS
+- Product state: Portal/database layer
+
+Recommended future authority:
+
+- Company OS should be the versioned canonical instruction source.
+- A controlled deploy process should generate/validate OpenClaw workspaces.
+- Portal should be authoritative for tenant-scoped business state and events.
+- OpenClaw should execute narrowly scoped jobs through a documented authenticated service boundary.
+
+---
+
+# N. Readiness matrix
+
+“Browser” means explicit browser grant. “HubSpot” distinguishes intended authority, not merely the ability to run shell commands.
+
+| Agent | Canonical role | Company OS state | Installed | Recent activity | Telegram | Cron | Browser | HubSpot | Portal connection | Runtime health | Drift | Production readiness | Critical blocker |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Nexus | Lead Generation Division COO | Defined | Yes | Today | Default account | 4 main jobs | No | No direct; policy says delegate | No | Degraded-active | High | Not ready | Identity/source drift, unstable scheduler |
+| Ekko | Discovery & qualification | Defined | Yes | Jul 22 | Configured/stale | No | Yes | No write | No | Idle | High | Not verified | Stale browser workflow |
+| Jayce | Contacts & enrichment | Defined | Yes | Jul 22 | Configured/stale | No | Yes | No write | No | Idle | High | Not verified | RocketReach/browser state |
+| Viktor | Certified CRM writer | Defined | Yes | Jul 22 | Configured/stale | No | Yes | Intended writer | No | Idle/high-risk | High | Blocked | Active write residue; old contract |
+| Heimerdinger | Analytics & records | Defined | Yes | Aug 7 | Configured/stale | No | Yes | Read/analysis historically | No | Idle | High | Not verified | Excel/path and role drift |
+| Camille | Security & integrity | Defined | Yes | Today | Verified recent delivery | Daily + hourly | Yes | Evidence/read checks only | No | Active/noisy | High | Partially ready | No incident lifecycle/dedup |
+| Shen | Organizational integrity/certification | Defined | Yes | Jul 22 | Configured/stale | No | No | Read/check only | No | Idle | High | Not ready | New three-stage certification not deployed |
+| Azir | Chief Workflow Agent | Defined | Yes | Aug 4 test | Configured | No | No | No | No | Shell | None in core docs | Not implemented | No Portal event/state adapter |
+| Ryze | Data & Reporting Officer | Defined | Yes | Aug 4 test | Configured | No | No | No | No | Shell | High | Not implemented | No reporting/event/storage integration |
+| Swain | Executive insight agent | Defined | Yes | Aug 4 test | Configured | No | No | No | No | Shell | High | Not implemented | No verified Ryze report input |
+| Twisted Fate | Website communications | Defined | Yes | Aug 4 test | Configured, conflicting | No | No | No | No | Shell | High | Not implemented | No Portal notifications; Telegram conflict |
+| Receptionist | Customer conversation agent | Defined separately | No OpenClaw agent | Portal UI only | Separate service config | No | N/A | No | Separate endpoint | Unverified | Architectural separation | Not verified | Upstream service not identified/configured locally |
+| Nasus | SnapFund website builder | Absent/non-Ovzaro | Yes | Jun 21 | Configured | No | No explicit grant | No | No | Stale | External | Not applicable | Separate private venture |
+
+---
+
+# O. What should not be rebuilt
+
+## 1. Working capability worth preserving
+
+- launchd-managed loopback gateway
+- agent/workspace separation
+- session and trajectory audit history
+- Nexus-to-specialist subagent delegation mechanism
+- explicit human approval gate
+- Shen pre-write integrity concept
+- Viktor-only CRM writer principle
+- Camille’s evidence-first security role
+- run-sheet and workflow-packet discipline
+- Telegram account routing where still required
+- local memory databases
+- configuration known-good hashing
+- Portal’s same-origin Workforce proxy design
+- Portal’s tenant/workspace/event repository architecture
+
+## 2. Useful historical artifacts
+
+- July Sales run sheets
+- acceptance and certification records
+- write/read-back reports
+- recovery/failure reports
+- security incident evidence
+- prior agent trajectories
+- lead-pattern and checked-domain history
+
+These should be retained as audit evidence, not treated as active queues.
+
+## 3. Obsolete/legacy code
+
+- old TRNDY base embedded into every live agent
+- stale `/Desktop/core` deployment path
+- one-off July recovery and retry scripts
+- temporary candidate and browser-control scripts
+- unused skills backup directories
+- old production run sheets still sitting in active scan locations
+
+## 4. Dangerous/stale configuration
+
+- duplicate blacklist jobs
+- global coding permissions for narrow product agents
+- stale browser/login assumptions
+- contradictory Nexus identity
+- Twisted Fate Telegram route
+- shared runtime boundary with Nasus/SnapFund
+- credential-bearing command audit history
+- incomplete backup archives treated as successful
+
+## 5. Duplicate/noisy residue
+
+- repeated quarantine copies of identical records
+- unreconciled active source records
+- stale session status entries
+- redundant skill backups
+- duplicate scheduler entries
+- 65 backups despite a stated retention target of 30
+
+---
+
+# P. Must fix before expansion
+
+| Severity | Problem | Why it matters | Subsystem | Recommended action |
+|---|---|---|---|---|
+| **Critical** | No canonical deployment path | Live agents do not consistently follow Company OS | Company OS/OpenClaw | Establish reviewed, one-way deployment with hashes and drift checks |
+| **Critical** | Broad permissions and weak technical role enforcement | Product shells can execute filesystem, shell, web, cron, and plugin actions beyond their roles | OpenClaw tools | Replace global coding inheritance with least-privilege per-agent profiles |
+| **Critical** | CRM/write-path integrity remains unresolved | Historical duplicates, out-of-lane writes, and stale active records can corrupt CRM | Sales/Viktor/Shen | Freeze production writes; reconcile incidents and deploy the certified-package workflow |
+| **High** | Camille incident duplication | Hundreds of repeated copies hide new security findings and consume storage/model time | Camille/quarantine | Add incident fingerprints, lifecycle states, suppression, acknowledgement, and closure |
+| **High** | Backup system gives false assurance | Archives can be partial while later runs skip and health check misreports reality | Backup/health check | Verify archive completion before rename, validate archives, fix health path, enforce retention |
+| **High** | Duplicate blacklist jobs and stuck sessions | Concurrent reads waste resources and created a 40+ minute stuck cron session | Scheduler/main | Retain one job, add lock/time limit, and alert on stale processing |
+| **High** | Portal/OpenClaw are not connected | Product agents cannot operate on real Portal state | Portal/Workforce API | Build a tenant-aware Workforce service adapter and explicit agent/event routing |
+| **High** | Tenant and venture isolation absent | Ovzaro, TRNDY, personal Nexus, and SnapFund share blast radius | Runtime/security | Separate credentials, workspaces, scheduler policy, logs, and possibly gateway instances |
+| **High** | Credential architecture is fragmented | Secrets may leak through argv/logs or overly broad local access | Auth/config/logging | Centralize secret injection, prohibit argv secrets, rotate exposed-risk credentials, redact logs |
+| **High** | Nexus identity is contradictory | The orchestrator may behave as a personal generalist or old TRNDY coordinator | Nexus | Deploy one authoritative COO identity and remove obsolete personal-operating rules from production |
+| **Medium** | Sales browser/RocketReach state is unverified | Installed agents may fail immediately despite historical success | Sales/browser | Perform a separately authorized non-writing readiness certification |
+| **Medium** | Product agents are only shells | UI names imply functionality that does not exist | Azir/Ryze/Swain/TF | Implement Portal adapters, event contracts, persistence, and tenant authorization |
+| **Medium** | Telegram mappings conflict with product rules | Twisted Fate can receive/send on a prohibited channel | Telegram | Remove or disable mappings not allowed by canonical role policy |
+| **Medium** | Observability conflates “job returned OK” with useful success | Cron can report OK despite stuck, duplicated, or non-delivered outcomes | Logs/cron | Add health SLOs, run correlation, timeout classification, and business-result metrics |
+| **Low** | Excessive retained backup/skill artifacts | Consumes storage and complicates audits | Runtime hygiene | Define retention and archive policies after validating recoverability |
+
+---
+
+# Q. Decisive answers
+
+1. **Is OpenClaw alive and healthy right now?**  
+   Alive and listening, but not healthy. It is degraded by crashes, stuck scheduler work, backup faults, and configuration drift.
+
+2. **Which agents are genuinely working today?**  
+   Nexus/main and Camille. Main cron jobs and Camille’s security jobs executed today.
+
+3. **Which agents are installed but mostly shells?**  
+   Azir, Ryze, Swain, and Twisted Fate. They have models, instructions, Telegram routes, and one test session each, but no production integrations.
+
+4. **Is the Sales workforce still runnable?**  
+   Historically yes; structurally partial; not verified today. It should be considered blocked for safe production use.
+
+5. **Is Camille actually protecting the system?**  
+   Yes, through active monitoring, evidence preservation, and alerts. She does not remediate or close incidents.
+
+6. **Why are there hundreds of quarantine entries?**  
+   Real historical integrity findings combined with copy-based quarantine, active source records that remain unchanged, hourly rescanning, and no incident deduplication or resolution lifecycle.
+
+7. **Are Telegram connections actually live?**  
+   Structurally yes. Camille has recent successful delivery evidence. Most other agents have only stale or test-era evidence; their current outbound health is unverified.
+
+8. **Is Nexus correctly configured?**  
+   No. Delegation is correctly wired to the six Sales/security agents, but its identity, workflow contracts, and Company OS deployment are inconsistent.
+
+9. **Are Azir/Ryze/Swain/Twisted Fate functional or just installed?**  
+   Installed and conversationally executable, but not functional as Portal production agents.
+
+10. **What is the biggest live-runtime risk?**  
+    Source-of-truth and permission drift: broadly capable agents are operating under inconsistent instructions, with CRM safety depending more on prose than enforceable boundaries.
+
+11. **What should be preserved?**  
+    The live gateway, delegation framework, audit/session history, run-sheet contracts, human approval gates, Camille’s evidence system, Shen/Viktor role separation, and Portal’s domain/event architecture.
+
+12. **What should be repaired?**  
+    Deployment synchronization, permissions, backups, cron locking, incident lifecycle, credential handling, Nexus identity, Sales certification, and Portal connectivity.
+
+13. **What should be retired?**  
+    Duplicate blacklist cron, stale `/Desktop/core` deployment practices, embedded TRNDY base blocks where no longer canonical, active July residue, and obsolete one-off recovery scripts after archival.
+
+14. **How far are Portal, Company OS, and OpenClaw from one coherent platform?**  
+    Architecturally they have useful pieces, but operationally they are still three separate systems. The missing layer is a controlled Company OS deployment pipeline plus a tenant-aware Portal-to-OpenClaw event/API integration. Until those exist, the workforce shown in Portal is largely representational rather than operational.

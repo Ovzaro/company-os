@@ -1,0 +1,768 @@
+READ-ONLY MASTER INVENTORY AUDIT — OVZARO COMPANY OS AND AI WORKFORCE
+
+Completed a read-only audit of company-os, its tracked files, current Git history, agent specifications, OpenClaw deployment scripts and skills, Receptionist implementation, knowledge base, and historical certification artifacts.
+
+No files were changed during the audit. No agents, workflows, OpenClaw commands, Telegram operations, HubSpot operations, or external services were invoked. The working tree was clean.
+
+EXECUTIVE CONCLUSION
+
+Company OS contains three materially different things:
+
+1. A detailed, instruction-driven Sales/Lead Generation operating system intended for an external OpenClaw runtime.
+2. A conventional, executable TypeScript Receptionist prototype with an HTTP service, OpenAI provider, filesystem retrieval, behavior gates, and tests.
+3. Specifications for the future Portal workforce—Azir, Ryze, Swain, and Twisted Fate—which are domain designs, not executable agents or backend services.
+
+The repository does not contain a complete seven-pillar product. Operations, reporting, notifications, security, and CRM workflows are extensively specified, but only Receptionist has a normal application implementation. Sales may have operated historically through OpenClaw, but the repository alone cannot prove that the current live runtime, bindings, credentials, browser sessions, schedules, or installed brains remain operational.
+
+Git status at audit time: clean on main, aligned with github/main.
+
+COMPANY OS ARCHITECTURE
+
+Classification:
+1. Operational/implemented
+2. Functional but incomplete
+3. Designed/documented
+4. Prototype/legacy
+5. Empty/not implemented
+6. Broken/contradictory
+
+01-company — 3/6
+Contains a Company OS constitution and a separate draft company constitution. The principles are useful, but two versions coexist and one canonical file contains deliberately empty articles.
+
+02-departments — 2/6
+Lead Generation has a substantial runbook and Nexus orchestration specification. It references live OpenClaw workspaces and prior operational incidents. Some workflow order is stale relative to newer certification documents.
+
+03-ai-workforce — 2/3
+Twelve canonical agent directories plus shared standards. Receptionist has executable code; the rest are primarily specifications consumed by OpenClaw.
+
+04-products — 5
+No tracked files.
+
+05-clients — 5
+No tracked files. Client knowledge is only a TODO governance stub under knowledge/clients.
+
+06-technology — 2/6
+OpenClaw deployment scripts and seven skill packages exist. The installer does not cover all current agents, and the Nexus cutover script references a file that is not located beside the script.
+
+07-academy — 2/3
+Contains one detailed Jayce investigation certification exercise with an evidence log, scorecard, and honest FAIL result. Useful proof of process exercise, not a training platform.
+
+07-marketing — 5
+Empty.
+
+08-finance — 5
+Empty.
+
+knowledge — 2/3
+Structured Markdown knowledge base. Several company and receptionist documents are approved and consumed by the Receptionist runtime; many sales, service, policy, client, marketing, product, and template documents are empty drafts.
+
+memory — 3/4
+Defines a knowledge-promotion process and contains one acceptance-test observation. Not live agent memory.
+
+Shared standards — 3
+Strong boundary, packet, certification, investigation, CRM, and browser-use specifications. Mostly not enforced by code.
+
+Root AGENTS.md — 6
+Describes an older flat TRNDY/OpenClaw repository structure and falsely says Git metadata is absent. It conflicts with the current numbered Company OS architecture.
+
+Root README.md — 3
+Only identifies the repository as “core”; inadequate as an architecture guide.
+
+99-archive — 4
+Archive/legacy area; not canonical.
+
+Canonical architecture guidance is 03-ai-workforce/STANDARDS.md. It correctly separates source definitions from external OpenClaw runtime state.
+
+A. MASTER AI WORKFORCE INVENTORY
+
+Azir
+Intended role: Chief Website Workflow Agent
+Pillar: Operations
+Inputs: Templates/rules, schedules, assignments, task evidence/status
+Outputs: Checklist instances, state transitions, audit entries, workflow events
+Expected tools/integrations: Future Portal workflow/database/event APIs
+Readiness: Specification only
+
+Camille
+Intended role: Chief AI Security Officer
+Pillar: Internal security
+Inputs: Run sheets, logs, config evidence, CRM readback, scraped content
+Outputs: Findings, severity reports, quarantine entries, warnings, alerts, security log
+Expected tools/integrations: OpenClaw browser/file/log/config access; Telegram alerting
+Readiness: Functional but incomplete via external OpenClaw
+
+Ekko
+Intended role: Director of Opportunity Discovery
+Pillar: Sales
+Inputs: Nexus brief, Heimerdinger intelligence, workflow packet
+Outputs: Discovery Packet and sourced run-sheet fields
+Expected tools/integrations: Shared Chrome, Google/browser, brand sites; source skill
+Readiness: Functional but incomplete via external OpenClaw
+
+Heimerdinger
+Intended role: Intelligence Department
+Pillar: Sales/BI
+Inputs: Completed run sheets, HubSpot read-only data, ledger, enrichment logs
+Outputs: Excel ledger rows, lead-patterns.md, operational/performance/strategic intelligence
+Expected tools/integrations: Browser, HubSpot read-only, spreadsheet/ledger skills
+Readiness: Functional but incomplete via external OpenClaw
+
+Jayce
+Intended role: Director of Contact Intelligence
+Pillar: Sales
+Inputs: Certified company/workflow packet
+Outputs: Internal investigation record and CRM Delivery/Communication Package
+Expected tools/integrations: Browser, first-party sites, LinkedIn, RocketReach
+Readiness: Functional but incomplete; one historical certification exercise failed
+
+Nexus
+Intended role: Lead Generation Division COO
+Pillar: Sales orchestration
+Inputs: Human batch goal, specialist results, run sheet, intelligence
+Outputs: Workflow packets, plans, approvals, briefs, routing decisions
+Expected tools/integrations: OpenClaw session spawning/yielding; shared files
+Readiness: Blocked/contradictory without validated runtime
+
+Receptionist
+Intended role: AI Receptionist/company front door
+Pillar: Receptionist/CX
+Inputs: Visitor messages and approved knowledge
+Outputs: Grounded response, conversation state, escalation language
+Expected tools/integrations: HTTP, OpenAI Responses API, filesystem knowledge
+Readiness: Executable prototype
+
+Ryze
+Intended role: Chief Data & Reporting Officer
+Pillar: BI
+Inputs: Verified workflow events
+Outputs: Daily/weekly/monthly reports, KPI history, reporting events
+Expected tools/integrations: Future database/reporting/event APIs
+Readiness: Specification only
+
+Shen
+Intended role: Director of Organizational Integrity
+Pillar: Sales governance
+Inputs: Workflow Packet plus Discovery, Communication, or CRM completion artifact
+Outputs: PASS/FAIL/ESCALATE certification and routed packet
+Expected tools/integrations: Checklists, shared files; OpenClaw delegation
+Readiness: Specification-driven; deployment/delegation incomplete
+
+Swain
+Intended role: Chief Executive Officer
+Pillar: BI/executive layer
+Inputs: Complete verified reporting events from Ryze
+Outputs: Daily/weekly/monthly executive summaries and prioritized insights
+Expected tools/integrations: Future reporting event consumer
+Readiness: Specification only
+
+Twisted Fate
+Intended role: Chief Communications Officer
+Pillar: Communications
+Inputs: Authorized workflow event with explicit recipients
+Outputs: Website notification and delivery record
+Expected tools/integrations: Future Portal notification API
+Readiness: Specification only
+
+Viktor
+Intended role: Director of CRM Integrity
+Pillar: Sales/CRM
+Inputs: Certified Communication Package, approval state, workflow packet
+Outputs: De-dupe result, new HubSpot record, readback verification, Deal ID
+Expected tools/integrations: Shared Chrome/HubSpot UI only
+Readiness: Functional but incomplete via external OpenClaw
+
+No additional canonical agent directory exists under 03-ai-workforce.
+
+Nasus is referenced as an external, unrelated OpenClaw agent that should be left alone. It is not present in Company OS and is not part of the Ovzaro workforce inventory.
+
+B. AGENT-BY-AGENT MATURITY
+
+Receptionist — Executable prototype. Full TypeScript project, HTTP adapter, provider, retrieval, state, behavior gates, scripts, and tests.
+
+Ekko — Functional but incomplete. Detailed specification plus installable sourcing skill; execution depends on live OpenClaw/browser.
+
+Jayce — Functional but incomplete. Detailed specification plus large enrichment skill and one historical Academy run.
+
+Viktor — Functional but incomplete. Detailed CRM specifications plus browser-execution skill; no HubSpot API code.
+
+Heimerdinger — Functional but incomplete. Ledger and analysis skills; depends on browser, external Excel file, live HubSpot and OpenClaw.
+
+Camille — Functional but incomplete. Security sweep and batch-audit skills; mostly procedural, with no standalone scanner.
+
+Nexus — Blocked/contradictory. Rich orchestration spec, but source installer deliberately leaves Nexus untouched and the cutover script is path-broken in this layout.
+
+Shen — Specification only/blocked. Detailed certification doctrine; absent from Nexus’s documented OpenClaw delegation allowlist.
+
+Azir — Specification only. No implementation or skills.
+
+Ryze — Specification only. No implementation or skills.
+
+Swain — Specification only. No implementation or skills.
+
+Twisted Fate — Specification only. No implementation or skills.
+
+JavaScript Telegram Receptionist — Legacy executable prototype. Retained under implementation/javascript-telegram-prototype; not canonical.
+
+No agent is demonstrably production-capable from repository evidence alone.
+
+DETAILED AGENT FINDINGS
+
+NEXUS
+
+Nexus owns Sales/Lead Generation workflow coordination, sequencing, approval state, bottleneck management, planning, and executive briefs. It is expressly prohibited from sourcing, enriching, deduplicating, writing HubSpot, maintaining the ledger, or performing security work.
+
+Its intended sequence is:
+
+Human goal
+  → Nexus packet/plan
+  → Ekko discovery
+  → Shen certification
+  → Viktor early de-dupe
+  → Jayce enrichment
+  → Shen communication certification
+  → human approval
+  → Viktor final de-dupe/write
+  → Shen CRM certification
+  → Heimerdinger ledger/intelligence
+
+Risks:
+- The older departmental orchestration omits Shen entirely, while current Nexus and shared standards require three Shen certification stages.
+- Nexus says it spawns Shen, but the documented live delegation allowlist contains only Ekko, Jayce, Viktor, Heimerdinger, and Camille.
+- install.sh intentionally leaves live Nexus untouched, so repository Nexus specifications are not automatically canonical at runtime.
+- cutover-nexus.sh expects Nexus_Orchestration.md beside the script, but the file is under 02-departments; in the current structured tree, the preflight would fail.
+- Its “always-on” heartbeat and backup duties are inherited historical infrastructure responsibilities, not part of the seven-pillar product.
+
+EKKO
+
+Ekko sources and qualifies DTC brands, chooses category mix, selects the celebrity association, and produces the Discovery Packet. It may use live-browser Google and multiple discovery channels, but may not enrich contacts, deduplicate against HubSpot, or write CRM data.
+
+Its output contract includes company name, website/domain, category, selected celebrity and rationale, source channel, qualification/search status, and skip reason.
+
+The sourcing skill is procedural rather than algorithmic code. It depends on OpenClaw’s browser and a logged-in external environment.
+
+A contradiction remains in some language: Ekko’s documents discuss duplicate screening and ask whether a company is already in HubSpot, but the strong current boundary says all authoritative HubSpot de-duplication belongs to Viktor.
+
+JAYCE
+
+Jayce owns professional investigation and contact intelligence:
+- First-party company research
+- Leadership mapping
+- Authority prioritization
+- LinkedIn discovery
+- RocketReach enrichment
+- Email/phone validation
+- Contact fallback
+- CRM-ready package compression
+
+The design strongly separates the internal Investigation Record, which contains evidence and reasoning, from the CRM Delivery/Communication Package, which contains only execution-ready fields.
+
+The Academy artifact proves this doctrine was exercised once. It received a final FAIL because authenticated RocketReach enrichment could not be completed. That is good governance evidence, but it proves the dependency can block completion.
+
+Several shared documents are stale relative to Jayce v3. Older contracts require Investigation Status and Manual Review Reason in the package, while current Jayce says those remain internal and are not sent to Viktor.
+
+VIKTOR
+
+Viktor is the only agent authorized to interact with HubSpot and performs:
+- Early existence check
+- Final pre-write de-duplication
+- Field mapping
+- Deal/contact creation
+- Association verification
+- Readback verification
+- Deal ID recording
+
+Writes are browser-only through a shared logged-in Chrome profile. There is no HubSpot API implementation.
+
+The human gate is explicit:
+- Shen must certify the Communication Package.
+- Nexus must assemble the batch.
+- The human owner must explicitly approve.
+- Viktor re-runs final de-duplication immediately before each new record.
+- Existing records are not edited by default.
+- Delete and merge are prohibited.
+
+This is well specified but enforced primarily by instructions. Shared browser credentials mean another browser-enabled agent is technically capable of writing despite the policy.
+
+HEIMERDINGER
+
+Heimerdinger maintains an append-only, Deal-ID-idempotent Excel ledger and produces three intelligence layers:
+- Operational: recent flow and friction
+- Performance: conversion and enrichment patterns
+- Strategic: repeated, high-confidence organizational learning
+
+It is read-only in HubSpot. Skills exist for appending ledger records and studying lead patterns. No spreadsheet file, durable analysis database, scheduled job, or standalone executable was found in Company OS.
+
+SHEN
+
+Shen owns professional boundaries and three certifications:
+1. Discovery
+2. Communication Package
+3. CRM completion/integrity
+
+Shen certifies completeness and permission to proceed, not subjective quality. It never repairs another professional’s artifact.
+
+The doctrine is strong, but actual deployment is incomplete:
+- No Shen skill package exists.
+- No executable certification engine exists.
+- Nexus’s recorded delegation allowlist omits Shen.
+- The old departmental orchestration omits Shen.
+- Identity language says Shen operates “without entering production workflows,” while its AGENTS file places it at every workflow transition.
+
+CAMILLE
+
+Camille monitors prompt injection, data exfiltration, unauthorized tool use, role drift, unsafe outbound communications, secrets access, configuration and identity drift, CRM corruption, and incorrect owner/stage/contact-field use.
+
+Severity levels are LOW, MEDIUM, HIGH, and CRITICAL. Intervention progresses from observation/logging through warning, quarantine, recommended restriction, and human escalation.
+
+Routine authority is limited to its own security log, quarantine records, warnings, and alerts. It may not write HubSpot, destroy evidence, delete agents, or permanently change configuration without human approval.
+
+AZIR
+
+Azir’s settled ownership is:
+- Recurring checklist generation
+- Checklist assignment
+- Task validation
+- Task/checklist status progression
+- Workflow progression
+- Audit logging
+- Workflow event creation
+
+Azir explicitly does not own notifications, reporting, executive summaries, subjective quality evaluation, template creation, or human communication.
+
+No executable Azir implementation, schema, state machine, skill, event contract, API, test, or persistence adapter exists here.
+
+RYZE, SWAIN, AND TWISTED FATE
+
+These three define a deliberate event separation:
+
+Azir workflow events
+  ├─→ Twisted Fate → website notifications + delivery record
+  └─→ Ryze → reports/KPIs/history
+                └─ reporting event → Swain → executive summary
+
+This is a valuable architectural design. None has executable implementation in Company OS.
+
+RECEPTIONIST
+
+The current TypeScript implementation is a genuine executable prototype.
+
+Implemented:
+- Conversation aggregate with active/closed state
+- Participants, messages, ordered turns, timestamps, invariants
+- Start/continue/end use cases
+- In-memory conversation store
+- Per-conversation HTTP turn serialization
+- /health and /chat
+- One-megabyte request limit
+- Deterministic behavior engine
+- Explicit permitted/prohibited/escalation outcomes
+- External-side-effect and tool-authorization gates
+- Filesystem Markdown knowledge parsing and ranking
+- Bounded intent-specific receptionist guidance retrieval
+- Source attribution
+- Deterministic generation context
+- OpenAI Responses API provider
+- Local CLI and HTTP service
+- Acceptance, retrieval, and HTTP tests
+
+Not implemented:
+- Durable conversation persistence
+- Durable memory
+- Tool execution
+- Actual handoff
+- Scheduling or booking
+- Calendar integration
+- Calls/voice
+- SMS
+- Email delivery
+- Contact/lead creation
+- Authentication or tenant isolation
+- Shared-secret verification
+- Rate limiting
+- Deployment packaging
+- Observability beyond console errors
+- Retries/timeouts around OpenAI
+- Client configuration or per-client knowledge
+- Transcript retention/consent policy
+
+Important safety limitation: classifyGenerationIntent() converts a human-handoff request into an escalate action but constructs the behavior request with escalation: not_required. The behavior engine therefore permits generation of handoff language rather than producing an actual escalation_required outcome. The acceptance test explicitly expects wording that no handoff has been initiated.
+
+Portal compatibility:
+- Portal sends conversationId, message, and an extra executive field.
+- The Receptionist HTTP adapter accepts the required first two and ignores extra properties.
+- Both return { message }.
+- Portal can point WORKFORCE_API_URL directly at /chat.
+
+The connection is not production-secure:
+- Portal sends a bearer token.
+- Receptionist does not validate it.
+- Receptionist allows CORS from *.
+- Conversation identity is caller-chosen.
+- State is process-local and disappears on restart.
+- No tenant or receptionist profile selection is honored.
+
+Several Receptionist documents are stale: the roadmap and API document still claim no route/runtime or provider has been selected, although HTTP and OpenAI implementations now exist.
+
+Static verification:
+- TypeScript passed.
+- ESLint passed.
+- Prettier failed on four files.
+- Tests were inspected but not run because the repository test command compiles into dist, violating the no-write requirement.
+
+SALES AND LEAD-GENERATION READINESS
+
+Actual ownership:
+- Batch goal and workflow packet: Nexus
+- Historical/current performance signal: Heimerdinger
+- Company sourcing and qualification: Ekko
+- Discovery certification: Shen
+- Master-lead eligibility certification: Shen, but requires live CRM facts
+- Early live HubSpot de-duplication: Viktor
+- Contact investigation/enrichment: Jayce
+- Communication Package certification: Shen
+- Approval state: Nexus records it; human grants it
+- Final de-duplication and HubSpot write: Viktor
+- CRM completion certification: Shen
+- Excel ledger and learning: Heimerdinger
+- Security monitoring: Camille
+
+Data contracts defined:
+- Workflow Packet
+- Discovery Packet
+- Communication Package / CRM Delivery Package
+- CRM Completion artifact
+- Shared run-sheet record
+- Certification checklists
+- Jayce-to-Viktor handoff contract
+- HubSpot write specification
+- Sales Ready standard
+- Incident report format
+
+Executable in a conventional sense:
+- No central lead-generation service
+- No database
+- No queue
+- No HubSpot API adapter
+- No RocketReach API adapter
+- No formal workflow engine
+- No automated certification engine
+
+OpenClaw-executable:
+- Agent instruction files
+- Ekko sourcing skill
+- Jayce enrichment skill
+- Viktor browser write skill
+- Heimerdinger ledger and analysis skills
+- Camille audit skills
+- Installation script for a subset of agents
+
+Historical evidence:
+- Git history documents prior OpenClaw configuration, bindings, browser grants, and routing failures.
+- One Academy investigation was performed and failed correctly.
+- One memory artifact claims an acceptance test passed through workflow boundaries and stopped on duplicate detection.
+- No durable run sheets, live security logs, completed ledger, or CRM write artifacts are committed.
+
+Realistic sales assessment:
+
+The operating doctrine is relatively mature; the product implementation is early.
+
+It is close to being a repeatable internal, supervised browser workflow if the external OpenClaw environment is still correctly installed and authenticated. It is not close to being a commercial multi-tenant Sales pillar because orchestration, persistence, provider integration, auditability, permissions, scheduling, and CRM connectivity are outside the product.
+
+AZIR AND PORTAL OPERATIONS ALIGNMENT
+
+Business rules already settled and to preserve during Portal backend design:
+- Every workflow has a clear state, owner, and next step.
+- Every assigned checklist/task retains an explicit owner.
+- Status changes only after the real triggering event occurs.
+- Validation happens before progression.
+- Validation is objective requirement checking, not subjective quality evaluation.
+- Required states cannot be skipped.
+- Incomplete dependencies cannot appear complete.
+- Material transitions create factual workflow events and audit records.
+- Azir owns workflow state and audit history.
+- Twisted Fate owns notification delivery.
+- Ryze owns reporting records and KPI aggregation.
+- Swain owns summaries based only on complete verified reporting.
+- Template creation is outside Azir.
+- Human communication is outside Azir.
+- Manager/quality judgment cannot silently be absorbed into Azir.
+
+Not settled in Company OS:
+- Checklist generation: ownership settled; schema/algorithm absent
+- Recurring schedules: ownership settled; recurrence semantics absent
+- Assignment: ownership settled; assignment rules absent
+- Evidence requirements: not specified
+- Evidence validation: only generic objective validation principle
+- Submission state: not explicitly defined
+- Manager approval: Azir cannot approve; exact human approval state machine absent
+- Needs Revision: not defined
+- Manager remarks: not defined
+- End-of-day incomplete handling: not defined
+- Escalation timers/overdue behavior: not defined
+- Audit history: ownership/principle settled; event schema absent
+- Notification separation: settled
+- Reporting-event separation: settled
+- Event delivery/retry semantics: not defined
+
+Portal currently has more concrete task/UI states than Azir’s specification. Backend implementation should reconcile the Portal vocabulary with Azir’s ownership rules, not assume Company OS already finalized every state.
+
+KNOWLEDGE SYSTEM
+
+The knowledge tree is primarily a filesystem documentation system, with one real runtime consumer: Receptionist.
+
+Strong aspects:
+- Frontmatter metadata
+- Status and owner fields
+- Version/date convention
+- Approved versus Draft distinction
+- Topic separation
+- Source attribution
+- Deterministic Markdown unit parsing
+- Read-only retrieval
+- Intent-bounded receptionist guidance
+- Git history as revision history
+
+Current content:
+- Approved: core company identity, mission, vision, values, contact methods, service overview, glossary, security policy, and extensive receptionist role/conversation material.
+- Draft/TODO: most general policies, sales knowledge, marketing positioning/messaging/voice, service implementation/onboarding/pricing/FAQ, client governance, templates, and products.
+- Product knowledge directory exists only inside the knowledge structure and is essentially unpopulated.
+- Client knowledge has no tenant structure, privacy model, ownership, or access controls.
+- Historical ovzaro-knowledge content was imported in the latest commits.
+
+It can become a tenant knowledge foundation, but today it lacks tenant/client identifiers, access control, approval records, inheritance/overrides, environment publication, indexing lifecycle, conflict detection, data retention, database/object storage, administrative UI, and a client onboarding pipeline.
+
+Treat it as canonical Markdown source content, not yet a production knowledge platform.
+
+SECURITY/CAMILLE ASSESSMENT
+
+Prompt injection detection: documented, skill-backed, OpenClaw-dependent; no committed incident sample.
+Role-drift controls: documented and baseline-driven; OpenClaw-dependent; runbook records identity/config incidents.
+Unauthorized tool-use detection: documented log-review procedure; no automated scanner.
+Secrets exposure handling: documented audit checklist; OpenClaw-dependent.
+Configuration drift: documented security baseline; prior binding/workspace drift is referenced.
+Quarantine: designed and skill-backed; no committed quarantine artifact.
+Security logging: defined format/location; no tracked security log.
+Severity levels: implemented in skill instructions.
+Telegram alerts: specification only and not verified.
+HubSpot restrictions: strongly documented but instruction-enforced rather than account-enforced.
+Scheduled sweeps: skill exists, but no scheduler configuration is in the repository.
+Batch audits: skill exists, but no execution log is committed.
+
+Camille is a strong governance specification with reusable audit playbooks, but not an automated security service.
+
+MARKETING AND FINANCE
+
+Marketing:
+07-marketing contains no tracked files. knowledge/marketing contains three draft shells: positioning, messaging, and brand voice. Their substantive sections are all TODO. The Portal marketing site is therefore more developed than Company OS marketing operations.
+Classification: empty product pillar with draft knowledge placeholders.
+
+Finance:
+08-finance contains no tracked files. No finance agent, invoice model, AR workflow, expense process, accounting integration, reporting contract, or finance knowledge was found.
+Classification: not implemented.
+
+ARCHITECTURE AND SOURCE-OF-TRUTH FINDINGS
+
+Canonical:
+- Current agent definitions under 03-ai-workforce/<agent>/
+- 03-ai-workforce/STANDARDS.md
+- Shared professional standards and packet/checklist documents
+- TypeScript Receptionist runtime
+- Root knowledge/ for company/receptionist knowledge, subject to document approval status
+
+Legacy or historical:
+- 99-archive
+- Receptionist docs/legacy*
+- javascript-telegram-prototype
+- Naming-history documents
+- Older departmental Nexus orchestration where it conflicts with current certification flow
+- Root AGENTS.md repository description
+- Older Receptionist roadmap/API statements contradicted by later code
+- TRNDY-specific base rules when applied to newly defined Ovzaro platform agents
+
+Product configuration candidates:
+- Agent role IDs and ownership boundaries
+- Workflow Packet schema
+- Certification stages and routing
+- Checklist/task workflow states
+- Notification and reporting event schemas
+- Human approval gates
+- Sales Ready criteria
+- Lead/contact/package schemas
+- Provider grants and integration permissions
+- Knowledge document metadata and publication status
+- Tenant-specific receptionist profiles and escalation rules
+
+Internal operational documentation:
+- League-of-Legends persona flavor
+- Human browser pacing instructions
+- Machine-specific workspace paths
+- OpenClaw recovery and backup procedures
+- Historical binding incidents
+- Specific CRM UI quirks until represented in a formal adapter mapping
+- Internal celebrity campaign constraints unrelated to a general Ovzaro customer product
+
+C. EXISTING CAPABILITIES TO REUSE
+
+- Company constitution and professional-boundary doctrine
+- Workflow Packet and explicit routing model
+- Three-stage certification model
+- Discovery Packet and Communication Package schemas
+- Sales Ready standard
+- Jayce investigation doctrine and evidence hygiene
+- Viktor CRM integrity/readback principles
+- Human approval before irreversible CRM writes
+- Camille severity and incident-report format
+- Azir/Ryze/Twisted Fate/Swain ownership separation
+- Knowledge frontmatter and approval-status model
+- Receptionist conversation domain
+- Receptionist behavior engine
+- Receptionist filesystem retrieval and Markdown parser
+- Receptionist OpenAI Responses provider
+- Receptionist HTTP request/response shape
+- Receptionist acceptance scenarios and approved knowledge
+
+D. FINALIZED LOGIC THAT SHOULD NOT BE REDESIGNED
+
+- Workflow owner, state, and next step must always be explicit.
+- Professional responsibilities do not transfer during handoff.
+- No status advances without verified conditions.
+- Certification verifies readiness/completeness and never repairs upstream work.
+- Human approval is required before CRM writes.
+- Only the CRM profession writes CRM data.
+- De-duplication occurs before costly enrichment and again immediately before creation.
+- CRM write requires readback verification.
+- Internal investigation evidence must not contaminate CRM-facing fields.
+- Missing evidence must remain explicit; agents must not invent it.
+- Notifications, reporting, executive summaries, and workflow state are separate concerns.
+- Reporting uses verified events only.
+- Executive summaries use complete verified reports only.
+- Knowledge retrieval must preserve source attribution.
+- External side effects and tool execution require explicit authorization.
+
+E. DOCUMENTATION THAT MAY LOOK IMPLEMENTED
+
+- Azir workflow execution
+- Ryze reporting
+- Swain executive summaries
+- Twisted Fate website notification creation
+- Shen certification execution
+- Nexus automatic orchestration
+- Scheduled Camille sweeps
+- Telegram alerts
+- Automated quarantine
+- Live HubSpot write restriction enforcement
+- Marketing
+- Finance
+- Client knowledge
+- Product configuration
+- Durable knowledge promotion
+- Automated recurring operations
+
+F. MISSING COMPANY OS/OPENCLAW/PORTAL CONNECTIONS
+
+- No shared authentication protocol between Portal and Receptionist.
+- No bearer-token validation in Receptionist.
+- No Portal-to-OpenClaw agent routing contract.
+- No tenant-aware workforce API.
+- No persistent workflow/event schema shared with Portal.
+- No database repositories for Azir, Ryze, Swain, or Twisted Fate.
+- No typed implementation of Workflow Packets in Portal.
+- No Portal certification/approval engine.
+- No notification delivery service.
+- No reporting pipeline.
+- No shared audit store.
+- No knowledge publication/indexing pipeline.
+- No client-specific knowledge resolver.
+- No shared agent registry or capability manifest.
+- No production deployment definition for Receptionist.
+- No durable conversation/transcript store.
+- No monitoring across Portal and Company OS.
+- OpenClaw deployment scripts do not install the full current workforce.
+
+G–L. READINESS SUMMARIES
+
+Sales: Mature internal process specification; externally runtime-dependent; not a commercial product backend.
+Operations/Azir: Strong ownership principles, weak state/schema detail, no executable implementation.
+Receptionist: Best executable system after Portal auth; useful HTTP/OpenAI/knowledge prototype, missing production security and channels.
+Security/Camille: Strong procedural controls and skills, minimal technical enforcement.
+Marketing: Not implemented.
+Finance: Not implemented.
+
+M. CONTRADICTIONS TO RESOLVE BEFORE SEPTEMBER 19
+
+1. Root AGENTS.md describes the wrong repository architecture.
+2. Two company constitutions coexist without an unambiguous canonical designation.
+3. Shared BASE_AGENTS.md is TRNDY-specific but the installer prepends it to Ovzaro platform agents.
+4. Installer omits Receptionist, Ryze, and Swain.
+5. Installer leaves Nexus untouched, so repository source may differ from live runtime.
+6. Nexus cutover script references a missing adjacent orchestration file.
+7. Nexus requires Shen but the documented delegation allowlist omits Shen.
+8. Old Nexus orchestration omits all Shen certification stages.
+9. Shen is described as not entering production workflows while also certifying every transition.
+10. Master Lead Certification appears assigned to Shen but requires live HubSpot facts owned exclusively by Viktor.
+11. Some Ekko text implies duplicate verification while Viktor owns all HubSpot de-duplication.
+12. Jayce v3 output excludes internal status/reason fields that older handoff contracts require.
+13. Viktor’s SOP permits updating existing records, while Viktor’s main specification says new records only by default and no existing-record edits without confirmation.
+14. Browser permissions technically permit several agents to write HubSpot despite “only Viktor writes” policy.
+15. Receptionist roadmap/API documents deny implementation that now exists.
+16. Portal sends a shared bearer token that Receptionist ignores.
+17. Receptionist handoff intent produces explanatory language, not a real handoff.
+18. Company OS calls Receptionist an employee rather than a platform service, while its implementation README positions it as a general conversational OS for all employees.
+19. Knowledge root says Receptionist implementation belongs outside the knowledge repository, but Company OS now contains both.
+20. Portal has concrete operation states not yet standardized by Azir.
+
+N. DO NOT REBUILD — ALREADY EXISTS
+
+- Receptionist conversation domain and HTTP adapter
+- OpenAI Responses provider
+- Filesystem Markdown knowledge retriever
+- Receptionist behavior authorization gates
+- Receptionist approved-knowledge set and acceptance scenarios
+- Workflow Packet concept
+- Discovery and Communication Package contracts
+- Certification checklists
+- Sales Ready standard
+- Lead investigation doctrine
+- CRM integrity/readback rules
+- Human approval gate
+- Security severity and incident format
+- Agent professional boundaries
+- Azir/Ryze/Twisted Fate/Swain separation
+- Company knowledge metadata and approval convention
+
+O. MUST BUILD — GENUINELY MISSING
+
+- Durable, tenant-aware workforce backend
+- Azir workflow engine and database
+- Full checklist/task/approval state machine
+- Evidence storage and validation
+- Durable audit log
+- Twisted Fate notification service
+- Ryze reporting pipeline
+- Swain summary generation service
+- Portal/OpenClaw identity and authorization
+- Receptionist authentication, persistence, handoff, scheduling, calls, SMS, and calendar
+- Client knowledge tenancy and publication
+- Product/agent configuration registry
+- Sales workflow persistence and orchestration
+- Technical HubSpot permission enforcement
+- Typed CRM adapter or controlled automation layer
+- Retry, queue, scheduling, idempotency, and dead-letter infrastructure
+- Cross-system observability
+- Marketing product
+- Finance product
+- CI and deployment process for Company OS services
+
+P. SEVEN-PILLAR MATURITY WITH PORTAL AND COMPANY OS COMBINED
+
+1. Operations & Workforce — Partial/prototype. Strong Portal demo plus settled agent boundaries; no durable backend.
+2. Receptionist & Scheduling — Executable prototype. Portal UI plus real Company OS HTTP/OpenAI/knowledge runtime; major production channels missing.
+3. Sales — Functional internal design, product backend missing. Deep OpenClaw doctrine/skills and limited historical evidence; no commercial platform implementation.
+4. Customer Experience — Early prototype. Receptionist and Portal communications concepts exist; no customer/ticket/channel system.
+5. Business Intelligence — Specification/UI only. Ryze/Swain design and Portal dashboards exist; no reporting pipeline.
+6. Marketing — Marketing-site UI only. No Company OS marketing system and only empty draft knowledge.
+7. Finance — Not implemented. Empty Company OS area and Portal placeholder/demo visuals.
+
+FINAL ASSESSMENT
+
+Company OS significantly raises confidence in Ovzaro’s business rules and professional architecture, but it does not materially raise the production maturity of most Portal pillars. The principal reusable asset is the specification layer; the principal implemented asset is the Receptionist runtime.
